@@ -495,6 +495,31 @@
       <p>Do <strong>not</strong> use GPIO26 for anything else while the gauge is connected. The DAC shares silicon with the ADC2 channel; ADC reads on this pin will be inaccurate.</p>
     </div>
   </div>
+
+  <!-- How it works -->
+  <div style="max-width:840px;margin:1.5rem auto 0">
+    <h2 class="section-title">How the Needle Moves</h2>
+    <div class="notes-grid" style="margin-top:0">
+      <div class="note-card green">
+        <h3>Needle Right — Tide Above MSL</h3>
+        <p>DAC &gt; 128 → GPIO26 rises above 1.65 V → GPIO26 side is higher than the reference side → current flows <strong>into gauge+</strong>, through the coil, out gauge− → needle deflects right.</p>
+      </div>
+      <div class="note-card blue">
+        <h3>Needle Center — Tide at MSL</h3>
+        <p>DAC = 128 → GPIO26 = 1.65 V = reference voltage → zero voltage difference across the coil → no current flows → needle rests at center zero.</p>
+      </div>
+      <div class="note-card red">
+        <h3>Needle Left — Tide Below MSL</h3>
+        <p>DAC &lt; 128 → GPIO26 drops below 1.65 V → the reference (1.65 V) is now higher than the signal side → current flows <strong>into gauge−</strong>, through the coil in reverse, out gauge+ → needle deflects left.</p>
+      </div>
+      <div class="note-card amber">
+        <h3>Why This Works Without an H-Bridge</h3>
+        <p>The 1.65 V reference is not a passive ground — it is an active mid-rail. The coil sits between two voltage sources and sees whichever way the differential tips. A single DAC pin reverses current direction through the coil just by crossing the mid-point voltage.</p>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <!-- ════════════════════════════════════════════════════════ BOM TAB -->
