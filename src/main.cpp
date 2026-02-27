@@ -92,22 +92,21 @@ void setNeedle(uint8_t dacVal) {
   dacWrite(DAC_PIN, dacVal);
 }
 
-// Boot sweep: center → high → center → low → center (2s total)
+// Boot sweep: full left → full right → center
 void bootSweep() {
-  // Rise from center to full positive
-  for (int i = DAC_CENTER; i <= 255; i += 5) {
+  // Snap to full negative (left)
+  setNeedle(0);
+  delay(200);
+  // Sweep full left to full right
+  for (int i = 0; i <= 255; i += 3) {
     setNeedle(i);
-    delay(20);
+    delay(12);
   }
-  // Drop from full positive to full negative
-  for (int i = 255; i >= 0; i -= 5) {
+  delay(150);
+  // Return to center
+  for (int i = 255; i >= DAC_CENTER; i -= 3) {
     setNeedle(i);
-    delay(20);
-  }
-  // Return from full negative to center
-  for (int i = 0; i <= DAC_CENTER; i += 5) {
-    setNeedle(i);
-    delay(20);
+    delay(12);
   }
   setNeedle(DAC_CENTER);
 }
