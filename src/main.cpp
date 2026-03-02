@@ -2,8 +2,13 @@
 // Tide Gauge — Standalone ESP32 Firmware
 //
 // Hardware:
-//   GPIO26 (DAC2) → ~3kΩ → galvanometer (+)
-//   GPIO25 (DAC1, fixed DAC 128 = 1.65V) → ~3kΩ → galvanometer (−)
+//   GPIO26 (DAC2) → MCP6002 U1A (unity-gain buffer) → R3 (~3kΩ) → galvanometer (+)
+//   GPIO25 (DAC1) → MCP6002 U1B (unity-gain buffer) → R4 (~3kΩ) → galvanometer (−)
+//   MCP6002 VCC → 3.3V, GND → GND; each op-amp output tied to (−in)
+//
+//   Push-pull drive: GPIO25 mirrors GPIO26 inverted (255 − dacVal).
+//   Op-amp buffers eliminate ESP32 DAC output impedance, allowing full
+//   gauge deflection. At full swing: ~3.1V / 6kΩ ≈ 0.5mA = gauge FSD.
 //
 //   DAC value 128 = 1.65V = center (0 tide delta from MSL)
 //   DAC value 255 = 3.3V  = full positive (high tide)
@@ -11,7 +16,7 @@
 //
 // NOAA station 9444900 Port Townsend, WA
 //   MSL = 8.35 ft above MLLW
-//   Tidal range: ±8 ft from MSL → maps to ±127 DAC counts
+//   Tidal range: ±8 ft from MSL → maps to full gauge deflection
 //
 // Web page: http://<device-ip>/
 //   Shows current tide, next high/low, weather, WiFi info, reset button
@@ -27,11 +32,11 @@
 #include <time.h>
 
 // ── Pin / hardware constants ──────────────────────────────────────
-#define DAC_PIN       26     // GPIO26 (DAC2) → R3 (3kΩ) → gauge (+)
-#define DAC_REF_PIN   25     // GPIO25 (DAC1) → R4 (1.6kΩ) → gauge (−), mirrors DAC_PIN inverted
+#define DAC_PIN       26     // GPIO26 (DAC2) → MCP6002 U1A → R3 (~3kΩ) → gauge (+)
+#define DAC_REF_PIN   25     // GPIO25 (DAC1) → MCP6002 U1B → R4 (~3kΩ) → gauge (−)
 #define DAC_CENTER    128    // mid-point — both DACs equal → no current
-#define DAC_POS       245    // full positive deflection (~500µA = gauge FSD, needle at 18/50)
-#define DAC_NEG        10    // full negative deflection
+#define DAC_POS       255    // full positive deflection (~0.5mA FSD with buffered output)
+#define DAC_NEG         0    // full negative deflection
 #define TIDE_SCALE_FT 8.0f  // ±8 ft from MSL = full deflection
 #define NOAA_MSL_FT   8.35f // Port Townsend MSL above MLLW
 
@@ -517,9 +522,9 @@ void handleTest() {
   <input type="range" min="0" max="255" value="128" id="slider" oninput="update(this.value)">
   <div class="label">DAC value (0 = full left &nbsp;|&nbsp; 128 = center &nbsp;|&nbsp; 255 = full right)</div>
   <div class="presets">
-    <button onclick="set(100)">Full Left<br><small>DAC 100</small></button>
+    <button onclick="set(0)">Full Left<br><small>DAC 0</small></button>
     <button onclick="set(128)">Center<br><small>DAC 128</small></button>
-    <button onclick="set(150)">Full Right<br><small>DAC 150</small></button>
+    <button onclick="set(255)">Full Right<br><small>DAC 255</small></button>
   </div>
 </div>
 <a href="/">&#8592; Back to tide page</a>
