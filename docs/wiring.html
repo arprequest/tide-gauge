@@ -257,7 +257,7 @@
   <h1>&#127754; Tide Gauge</h1>
   <div class="subtitle">
     Standalone ESP32 · Center-zero galvanometer · NOAA Station 9444900 Port Townsend, WA<br>
-    Repurposed "Yards Per Second" gauge — ±0.5 mA end scale
+    Repurposed "Yards Per Second" gauge — ±0.5 mA end scale · MCP6002 op-amp buffered drive
   </div>
 </div>
 
@@ -273,7 +273,7 @@
   <div class="diagram-container">
     <h2 class="section-title">Schematic</h2>
 
-    <svg class="wiring-svg" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg">
+    <svg class="wiring-svg" viewBox="0 0 700 530" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
           <polygon points="0 0, 8 3, 0 6" fill="#555"/>
@@ -293,168 +293,248 @@
       </defs>
 
       <!-- Background -->
-      <rect width="700" height="520" fill="#fafafa" rx="8"/>
+      <rect width="700" height="530" fill="#fafafa" rx="8"/>
+
+      <!-- ── Title / caption ────────────────────────────────────── -->
+      <text x="350" y="28" text-anchor="middle" font-family="Archivo Black, sans-serif"
+            font-size="13" fill="#2563eb" letter-spacing="1">TIDE GAUGE — OP-AMP BUFFERED PUSH-PULL DRIVE</text>
+      <text x="350" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9.5" fill="#888">MCP6002 dual op-amp buffers · eliminates DAC output impedance · full ±0.5 mA FSD</text>
+      <text x="350" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9.5" fill="#888">DAC 255 = full right · DAC 0 = full left · DAC 128 = center</text>
 
       <!-- ── ESP32 board ──────────────────────────────────────────── -->
-      <rect x="40" y="120" width="160" height="280" rx="6"
+      <rect x="30" y="110" width="155" height="280" rx="6"
             fill="#f0f4ff" stroke="#2563eb" stroke-width="2"/>
-      <text x="120" y="113" text-anchor="middle"
+      <text x="107" y="103" text-anchor="middle"
             font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700"
             fill="#2563eb" letter-spacing="1">ESP32-WROOM-32</text>
 
       <!-- Left-side pins (GND, 3.3V) -->
-      <rect x="40" y="160" width="30" height="16" rx="3" fill="#1a1a1a"/>
-      <text x="55" y="172" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <rect x="30" y="153" width="30" height="16" rx="3" fill="#1a1a1a"/>
+      <text x="45" y="165" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#fff">GND</text>
 
-      <rect x="40" y="184" width="30" height="16" rx="3" fill="#dc2626"/>
-      <text x="55" y="196" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <rect x="30" y="177" width="30" height="16" rx="3" fill="#dc2626"/>
+      <text x="45" y="189" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#fff">3V3</text>
 
       <!-- Right-side pins -->
-      <!-- GPIO25 (DAC1) — fixed reference -->
-      <rect x="170" y="196" width="30" height="16" rx="3" fill="#b45309"/>
-      <text x="185" y="208" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <!-- GPIO25 (DAC1) -->
+      <rect x="155" y="183" width="30" height="16" rx="3" fill="#b45309"/>
+      <text x="170" y="195" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#fff">IO25</text>
-      <text x="163" y="208" text-anchor="end" font-family="IBM Plex Mono, monospace"
+      <text x="152" y="195" text-anchor="end" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#555">DAC1</text>
 
-      <!-- GPIO26 (DAC2) — tide signal -->
-      <rect x="170" y="220" width="30" height="16" rx="3" fill="#16a34a"/>
-      <text x="185" y="232" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <!-- GPIO26 (DAC2) -->
+      <rect x="155" y="211" width="30" height="16" rx="3" fill="#16a34a"/>
+      <text x="170" y="223" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#fff">IO26</text>
-      <text x="163" y="232" text-anchor="end" font-family="IBM Plex Mono, monospace"
+      <text x="152" y="223" text-anchor="end" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#555">DAC2</text>
 
-      <!-- ── Series resistor R3 (3kΩ) on GPIO26 side ───────────── -->
-      <rect x="226" y="220" width="52" height="18" rx="3" fill="#fff" stroke="#999" stroke-width="1.5"/>
-      <text x="252" y="233" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#333">3 kΩ</text>
-      <text x="252" y="216" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#16a34a">R3</text>
+      <!-- ── MCP6002 chip outline ──────────────────────────────── -->
+      <rect x="207" y="162" width="88" height="98" rx="4"
+            fill="#f5f5ff" stroke="#7c3aed" stroke-width="2"/>
+      <text x="251" y="175" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9" font-weight="700" fill="#7c3aed">MCP6002</text>
 
-      <!-- GPIO26 → R3 -->
-      <line x1="200" y1="228" x2="226" y2="228" stroke="#16a34a" stroke-width="2"
-            marker-end="url(#arrow-green)"/>
-      <!-- R3 → gauge+ -->
-      <line x1="278" y1="228" x2="450" y2="228" stroke="#16a34a" stroke-width="2"
-            marker-end="url(#arrow-green)"/>
+      <!-- ── U1B op-amp (GPIO25 / amber, upper) ──────────────── -->
+      <!-- Triangle: (213,178) (213,206) (283,192) -->
+      <polygon points="213,178 213,206 283,192"
+               fill="#fff9e6" stroke="#b45309" stroke-width="1.5"/>
+      <!-- (+) input label — upper-left of triangle -->
+      <text x="218" y="188" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#b45309">+</text>
+      <!-- (−) input label — lower-left of triangle -->
+      <text x="218" y="202" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#b45309">−</text>
+      <!-- U1B label -->
+      <text x="287" y="185" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#b45309" font-weight="700">U1B</text>
 
-      <!-- ── Series resistor R4 (3kΩ) on GPIO25 ref side ──────── -->
-      <rect x="370" y="196" width="52" height="18" rx="3" fill="#fff" stroke="#999" stroke-width="1.5"/>
-      <text x="396" y="209" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#333">3 kΩ</text>
-      <text x="396" y="192" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#b45309">R4</text>
+      <!-- U1B feedback line: output (283,192) → right to (297,192) → down to (297,212) → left to (207,212) → up to (207,206) → right to (213,206) -->
+      <polyline points="283,192 297,192 297,212 207,212 207,206 213,206"
+                fill="none" stroke="#b45309" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <!-- Junction dot at (297,192) -->
+      <circle cx="297" cy="192" r="3" fill="#b45309"/>
 
-      <!-- GPIO25 → R4 -->
-      <line x1="200" y1="204" x2="370" y2="204" stroke="#b45309" stroke-width="2"
-            marker-end="url(#arrow-orange)"/>
-      <!-- 1.65V callout on wire -->
-      <circle cx="285" cy="204" r="4" fill="#b45309"/>
-      <text x="285" y="194" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#b45309" font-weight="700">1.65 V</text>
-      <!-- R4 → gauge- -->
-      <line x1="422" y1="205" x2="490" y2="262" stroke="#b45309" stroke-width="2"
-            marker-end="url(#arrow-orange)"/>
+      <!-- ── U1A op-amp (GPIO26 / green, lower) ──────────────── -->
+      <!-- Triangle: (213,218) (213,246) (283,232) -->
+      <polygon points="213,218 213,246 283,232"
+               fill="#f0fff4" stroke="#16a34a" stroke-width="1.5"/>
+      <!-- (+) input label — upper-left of triangle -->
+      <text x="218" y="228" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#16a34a">+</text>
+      <!-- (−) input label — lower-left of triangle -->
+      <text x="218" y="242" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#16a34a">−</text>
+      <!-- U1A label -->
+      <text x="287" y="225" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#16a34a" font-weight="700">U1A</text>
 
-      <!-- ── Galvanometer ─────────────────────────────────────── -->
+      <!-- U1A feedback line: output (283,232) → right to (297,232) → down to (297,252) → left to (207,252) → up to (207,246) → right to (213,246) -->
+      <polyline points="283,232 297,232 297,252 207,252 207,246 213,246"
+                fill="none" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <!-- Junction dot at (297,232) -->
+      <circle cx="297" cy="232" r="3" fill="#16a34a"/>
+
+      <!-- ── VCC / GND connections to MCP6002 ──────────────────── -->
+      <!-- VCC stub: (251,162) up to (251,148) -->
+      <line x1="251" y1="162" x2="251" y2="148" stroke="#dc2626" stroke-width="1.5"/>
+      <text x="251" y="144" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#dc2626" font-weight="700">+3.3V</text>
+      <!-- GND stub: (251,260) down to (251,272) -->
+      <line x1="251" y1="260" x2="251" y2="272" stroke="#555" stroke-width="1.5"/>
+      <text x="251" y="282" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#555" font-weight="700">GND</text>
+
+      <!-- Wire from ESP32 3V3 pin (left edge x=30, center y=185) to MCP6002 VCC -->
+      <!-- (30,185) → (20,185) → (20,140) → (251,140) → (251,148) -->
+      <polyline points="30,185 20,185 20,140 251,140 251,148"
+                fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+      <!-- Wire from ESP32 GND pin (left edge x=30, center y=161) to MCP6002 GND -->
+      <!-- (30,161) → (20,161) → (20,280) → (251,280) → (251,272) -->
+      <polyline points="30,161 20,161 20,280 251,280 251,272"
+                fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+      <!-- ── GPIO25 → U1B (+) input ─────────────────────────── -->
+      <!-- IO25 right edge at (185,191); U1B (+) at left edge y≈186 (upper of 178-206) -->
+      <line x1="185" y1="191" x2="213" y2="184"
+            stroke="#b45309" stroke-width="2" marker-end="url(#arrow-orange)"/>
+
+      <!-- ── GPIO26 → U1A (+) input ─────────────────────────── -->
+      <!-- IO26 right edge at (185,219); U1A (+) at left edge y≈225 (upper of 218-246) -->
+      <line x1="185" y1="219" x2="213" y2="225"
+            stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+      <!-- ── R4 (amber, 3kΩ) — GPIO25 / U1B path ─────────────── -->
+      <rect x="315" y="184" width="52" height="16" rx="3"
+            fill="#fff" stroke="#b45309" stroke-width="1.5"/>
+      <text x="341" y="195" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9.5" fill="#333">3 k&#937;</text>
+      <text x="341" y="180" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#b45309" font-weight="700">R4</text>
+
+      <!-- Wire from U1B junction (297,192) → R4 input (315,192) -->
+      <line x1="297" y1="192" x2="315" y2="192"
+            stroke="#b45309" stroke-width="2"/>
+      <!-- Wire from R4 output (367,192) → right to (440,192) → down to (440,263) → right to gauge− at (455,263) -->
+      <polyline points="367,192 440,192 440,263 455,263"
+                fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#arrow-orange)"/>
+
+      <!-- ── R3 (green, 3kΩ) — GPIO26 / U1A path ─────────────── -->
+      <rect x="315" y="224" width="52" height="16" rx="3"
+            fill="#fff" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="341" y="235" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9.5" fill="#333">3 k&#937;</text>
+      <text x="341" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#16a34a" font-weight="700">R3</text>
+
+      <!-- Wire from U1A junction (297,232) → R3 input (315,232) -->
+      <line x1="297" y1="232" x2="315" y2="232"
+            stroke="#16a34a" stroke-width="2"/>
+      <!-- Wire from R3 output (367,232) → gauge+ at (455,232) -->
+      <line x1="367" y1="232" x2="455" y2="232"
+            stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+      <!-- ── Galvanometer ──────────────────────────────────────── -->
       <!-- Body -->
-      <rect x="450" y="200" width="120" height="120" rx="8"
+      <rect x="455" y="200" width="120" height="120" rx="8"
             fill="#fffdf0" stroke="#b45309" stroke-width="2"/>
 
       <!-- Dial face -->
-      <circle cx="510" cy="265" r="46" fill="#fff9e6" stroke="#b45309" stroke-width="1.5"/>
+      <circle cx="515" cy="260" r="46" fill="#fff9e6" stroke="#b45309" stroke-width="1.5"/>
 
-      <!-- Scale arc marks (simplified) -->
+      <!-- Scale arc marks -->
       <g stroke="#555" stroke-width="1">
         <!-- Center mark -->
-        <line x1="510" y1="222" x2="510" y2="232"/>
+        <line x1="515" y1="217" x2="515" y2="227"/>
         <!-- Left marks -->
-        <line x1="479" y1="230" x2="484" y2="238"/>
-        <line x1="462" y1="250" x2="470" y2="254"/>
+        <line x1="484" y1="225" x2="489" y2="233"/>
+        <line x1="467" y1="245" x2="475" y2="249"/>
         <!-- Right marks -->
-        <line x1="541" y1="230" x2="536" y2="238"/>
-        <line x1="558" y1="250" x2="550" y2="254"/>
+        <line x1="546" y1="225" x2="541" y2="233"/>
+        <line x1="563" y1="245" x2="555" y2="249"/>
       </g>
 
       <!-- "YARDS PER SECOND" label on gauge -->
-      <text x="510" y="258" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <text x="515" y="253" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="7" fill="#888" letter-spacing="0.5">YARDS PER SECOND</text>
 
       <!-- Center needle (pointing up = tide at MSL) -->
-      <line x1="510" y1="265" x2="510" y2="230"
+      <line x1="515" y1="260" x2="515" y2="225"
             stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="510" cy="265" r="4" fill="#555"/>
+      <circle cx="515" cy="260" r="4" fill="#555"/>
 
       <!-- +/- labels -->
-      <text x="463" y="274" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <text x="468" y="269" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#888">−</text>
-      <text x="557" y="274" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <text x="562" y="269" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#888">+</text>
-      <text x="510" y="302" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <text x="515" y="297" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#b45309">± 0.5 mA</text>
 
-      <!-- Gauge terminal labels -->
-      <text x="452" y="296" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#16a34a" font-weight="700">+</text>
-      <text x="568" y="296" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#b45309" font-weight="700">−</text>
+      <!-- Gauge terminal labels — gauge+ at left side y=232, gauge− at left side y=263 -->
+      <text x="452" y="236" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#16a34a" font-weight="700">gauge+</text>
+      <text x="452" y="267" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#b45309" font-weight="700">gauge−</text>
 
       <!-- ── Legend ─────────────────────────────────────────────── -->
-      <rect x="40" y="430" width="620" height="56" rx="6"
+      <rect x="40" y="445" width="620" height="62" rx="6"
             fill="#fff" stroke="#d4d4d4" stroke-width="1"/>
-      <text x="60" y="448" font-family="IBM Plex Mono, monospace" font-size="10"
+      <text x="60" y="463" font-family="IBM Plex Mono, monospace" font-size="10"
             font-weight="700" fill="#555" letter-spacing="1">LEGEND</text>
 
-      <line x1="60" y1="466" x2="100" y2="466" stroke="#16a34a" stroke-width="2"/>
-      <text x="108" y="470" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">GPIO26 (DAC2) → R3 → gauge+ (tide signal)</text>
+      <!-- Green legend -->
+      <line x1="60" y1="477" x2="100" y2="477" stroke="#16a34a" stroke-width="2"/>
+      <text x="108" y="481" font-family="IBM Plex Mono, monospace" font-size="9" fill="#555">GPIO26 &#x2192; U1A buffer &#x2192; R3 &#x2192; gauge+ (tide signal)</text>
 
-      <line x1="360" y1="466" x2="400" y2="466" stroke="#b45309" stroke-width="2"/>
-      <text x="408" y="470" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">GPIO25 (DAC1, fixed DAC 128) → R4 → gauge−</text>
+      <!-- Amber legend -->
+      <line x1="60" y1="494" x2="100" y2="494" stroke="#b45309" stroke-width="2"/>
+      <text x="108" y="498" font-family="IBM Plex Mono, monospace" font-size="9" fill="#555">GPIO25 &#x2192; U1B buffer &#x2192; R4 &#x2192; gauge&#x2212; (inverted reference)</text>
 
-      <!-- ── Title / caption ────────────────────────────────────── -->
-      <text x="350" y="30" text-anchor="middle" font-family="Archivo Black, sans-serif"
-            font-size="14" fill="#2563eb" letter-spacing="1">TIDE GAUGE — CENTER-ZERO DRIVE</text>
-      <text x="350" y="50" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#888">GPIO26 (DAC2) signal · GPIO25 (DAC1) fixed 1.65 V reference · no voltage divider</text>
-      <text x="350" y="66" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#888">+8 ft from MSL = DAC 255  ·  −8 ft from MSL = DAC 0  ·  MSL = DAC 128</text>
+      <!-- Purple legend (MCP6002 box) -->
+      <rect x="400" y="469" width="14" height="14" rx="2" fill="#f5f5ff" stroke="#7c3aed" stroke-width="1.5"/>
+      <text x="420" y="481" font-family="IBM Plex Mono, monospace" font-size="9" fill="#555">MCP6002 unity-gain buffers (output &#x2192; &#x2212;input)</text>
+
     </svg>
   </div>
 
   <div class="notes-grid">
     <div class="note-card green">
-      <h3>GPIO26 Side (gauge +)</h3>
-      <p>GPIO26 (DAC2) drives the positive terminal through a <code>3 kΩ</code> resistor.</p>
-      <p>DAC range 0–3.3 V. At DAC 128 the output is 1.65 V — same as the reference side — so no current flows and the needle sits at center.</p>
+      <h3>GPIO26 &#x2192; U1A &#x2192; gauge +</h3>
+      <p>GPIO26 (DAC2) drives the U1A op-amp input. The unity-gain buffer presents ~1T&#937; impedance to the DAC (no loading) and drives R3 with ~100&#937; source impedance.</p>
+      <p>At DAC 128 the output is 1.65&thinsp;V — equal to the reference side — so no current flows and the needle sits at center.</p>
     </div>
     <div class="note-card amber">
-      <h3>GPIO25 Reference (gauge −)</h3>
-      <p>GPIO25 (DAC1) is set to a fixed DAC value of 128 (1.65 V) in firmware and never changes.</p>
-      <p>This provides a low-impedance mid-rail reference. Both sides now see the same DAC source impedance, giving ~2× more deflection than a passive voltage divider.</p>
+      <h3>GPIO25 &#x2192; U1B &#x2192; gauge &#x2212;</h3>
+      <p>GPIO25 (DAC1) mirrors GPIO26 inverted in firmware (<code>dacVal = 255 &#x2212; GPIO26</code>). The U1B buffer drives R4 with low impedance.</p>
+      <p>Push-pull: when GPIO26 rises, GPIO25 falls by the same amount, doubling the differential voltage across the gauge.</p>
     </div>
     <div class="note-card blue">
       <h3>Current Calculation</h3>
-      <p>Max differential voltage = 1.65 V (when DAC at 0 or 255).</p>
-      <p>Total series resistance = 6 kΩ (R3 + R4, 3 kΩ each).<br>
-         Both sides are DAC outputs (low impedance).<br>
-         Peak current ≈ <code>1.65 V ÷ 6 kΩ ≈ 0.28 mA</code> ≈ 55% of rated ±0.5 mA.</p>
+      <p>Op-amp output impedance ~100&#937; (vs ESP32 DAC's ~3&#x2013;4&thinsp;k&#937;). At full swing: 3.1&thinsp;V &#xF7; (3000 + 49 + 3000) &#x2248; 510&thinsp;&#xB5;A — matching the 0.5&thinsp;mA FSD spec.</p>
+      <p>R3 and R4 are set with 10&thinsp;k&#937; trimpots (~3&thinsp;k&#937; each).</p>
     </div>
     <div class="note-card red">
       <h3>Calibration</h3>
       <p>If the needle rests off-center with no tide data, adjust <code>DAC_CENTER</code> (default 128) in <code>src/main.cpp</code> up or down by a few counts and reflash.</p>
-      <p>The reference pin (<code>DAC_REF_PIN</code>) is always written to match <code>DAC_CENTER</code>, so both sides track together.</p>
+      <p>The reference pin (<code>DAC_REF_PIN</code>) always tracks <code>255 &#x2212; DAC_CENTER</code>. Also set trimpots R3 and R4 to ~3&thinsp;k&#937; each with a multimeter before connecting the gauge.</p>
     </div>
     <div class="note-card purple">
       <h3>Tide Scale</h3>
       <p>NOAA station 9444900 Port Townsend: MSL = 8.35 ft above MLLW.</p>
-      <p>Gauge maps <code>±8 ft</code> from MSL to full deflection. Adjust <code>TIDE_SCALE_FT</code> in firmware if the local tidal range is smaller.</p>
+      <p>Gauge maps <code>&#xB1;8 ft</code> from MSL to full deflection. Adjust <code>TIDE_SCALE_FT</code> in firmware if the local tidal range is smaller.</p>
     </div>
     <div class="note-card">
       <h3>DAC Note</h3>
-      <p>ESP32 DAC outputs are GPIO25 (DAC1) and GPIO26 (DAC2). Both are 8-bit.</p>
-      <p>Do <strong>not</strong> use GPIO26 for anything else while the gauge is connected. The DAC shares silicon with the ADC2 channel; ADC reads on this pin will be inaccurate.</p>
+      <p>ESP32 DAC outputs are GPIO25 (DAC1) and GPIO26 (DAC2). Both are 8-bit (0&#x2013;255).</p>
+      <p>MCP6002 power: VCC &#x2192; 3.3&thinsp;V, GND &#x2192; GND. Bypass with 100&thinsp;nF ceramic cap across VCC&#x2013;GND close to the chip.</p>
+      <p>Do <strong>not</strong> use GPIO26 for anything else while the gauge is connected. ADC reads on this pin will be inaccurate.</p>
     </div>
   </div>
 
@@ -464,19 +544,19 @@
     <div class="notes-grid" style="margin-top:0">
       <div class="note-card green">
         <h3>Needle Right — Tide Above MSL</h3>
-        <p>DAC &gt; 128 → GPIO26 rises above 1.65 V → GPIO26 side is higher than the reference side → current flows <strong>into gauge+</strong>, through the coil, out gauge− → needle deflects right.</p>
+        <p>DAC &gt; 128 &#x2192; GPIO26 rises above 1.65&thinsp;V &#x2192; U1A output rises, U1B output falls &#x2192; current flows <strong>into gauge+</strong>, through the coil, out gauge&#x2212; &#x2192; needle deflects right.</p>
       </div>
       <div class="note-card blue">
         <h3>Needle Center — Tide at MSL</h3>
-        <p>DAC = 128 → GPIO26 = 1.65 V = reference voltage → zero voltage difference across the coil → no current flows → needle rests at center zero.</p>
+        <p>DAC = 128 &#x2192; GPIO26 = 1.65&thinsp;V = GPIO25 reference voltage &#x2192; zero differential across the coil &#x2192; no current flows &#x2192; needle rests at center zero.</p>
       </div>
       <div class="note-card red">
         <h3>Needle Left — Tide Below MSL</h3>
-        <p>DAC &lt; 128 → GPIO26 drops below 1.65 V → the reference (1.65 V) is now higher than the signal side → current flows <strong>into gauge−</strong>, through the coil in reverse, out gauge+ → needle deflects left.</p>
+        <p>DAC &lt; 128 &#x2192; GPIO26 drops below 1.65&thinsp;V, GPIO25 rises &#x2192; U1B output is now higher than U1A &#x2192; current flows <strong>into gauge&#x2212;</strong>, through the coil in reverse, out gauge+ &#x2192; needle deflects left.</p>
       </div>
       <div class="note-card amber">
-        <h3>Why This Works Without an H-Bridge</h3>
-        <p>The 1.65 V reference is not a passive ground — it is an active mid-rail. The coil sits between two voltage sources and sees whichever way the differential tips. A single DAC pin reverses current direction through the coil just by crossing the mid-point voltage.</p>
+        <h3>Why This Works at Full Scale</h3>
+        <p>The MCP6002 op-amp buffers are the key: without them the ESP32 DAC's ~3&#x2013;4&thinsp;k&#937; output impedance adds to R3/R4 and limits peak current to ~55% of FSD. With the buffers (~100&#937; output impedance each), the full 3.1&thinsp;V differential is available across the gauge circuit, reaching the rated ±0.5&thinsp;mA at full deflection.</p>
       </div>
     </div>
   </div>
@@ -498,8 +578,10 @@
     <tbody>
       <tr><td class="bom-qty">1</td><td>ESP32-WROOM-32 dev board</td><td>Any 38-pin ESP32 devkit works</td></tr>
       <tr><td class="bom-qty">1</td><td>Center-zero galvanometer</td><td>±0.5 mA end scale ("Yards Per Second")</td></tr>
-      <tr><td class="bom-qty">2</td><td>Resistor 3 kΩ</td><td>R3 &amp; R4 — series limiters (use 2.7 kΩ–3.3 kΩ)</td></tr>
-      <tr><td class="bom-qty">1</td><td>Mini breadboard or perfboard</td><td>For the voltage divider</td></tr>
+      <tr><td class="bom-qty">1</td><td>MCP6002 or MCP6002T</td><td>Dual rail-to-rail op-amp, SOT-23-8 or DIP-8 — unity-gain buffers for DAC outputs</td></tr>
+      <tr><td class="bom-qty">2</td><td>Trimpot 10 k&#937; (×2)</td><td>R3 &amp; R4 — set to ~3 k&#937; each (103 marking)</td></tr>
+      <tr><td class="bom-qty">1</td><td>Capacitor 100 nF ceramic</td><td>Bypass cap across MCP6002 VCC&#x2013;GND</td></tr>
+      <tr><td class="bom-qty">1</td><td>Breadboard / perfboard</td><td>For op-amp buffer circuit</td></tr>
       <tr><td class="bom-qty">1</td><td>USB-C cable + 5 V supply</td><td>Powers ESP32</td></tr>
       <tr><td class="bom-qty">—</td><td>Hook-up wire</td><td>26–28 AWG stranded</td></tr>
     </tbody>
@@ -513,56 +595,61 @@
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-text">
-        <strong>GPIO25 reference.</strong> GPIO25 (DAC1) is configured in firmware as a fixed 1.65 V reference (DAC 128).
-        No external voltage divider needed — just wire <strong>GPIO25 → R4 → gauge −</strong>.
+        <strong>Wire MCP6002 power.</strong> Connect MCP6002 VCC (pin 6) &#x2192; ESP32 3.3&thinsp;V, GND (pin 3) &#x2192; GND.
+        Bypass with a <code>100 nF</code> ceramic capacitor across VCC&#x2013;GND placed close to the chip.
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-text">
-        <strong>Series resistors.</strong> Add a <code>3 kΩ</code> resistor in-line on the GPIO26 wire (R3) and
-        a second <code>3 kΩ</code> resistor between the 1.65 V midpoint and the gauge negative terminal (R4).
-        These protect the DAC output and the meter coil.
+        <strong>Wire op-amp buffers.</strong> Connect GPIO26 &#x2192; U1A (+in, pin 5). Connect GPIO25 &#x2192; U1B (+in, pin 3).
+        Tie each (&#x2212;in) to its own output: U1A (&#x2212;in pin 6 &#x2192; out pin 1), U1B (&#x2212;in pin 2 &#x2192; out pin 7).
+        Each op-amp is now a unity-gain voltage follower.
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-text">
-        <strong>Connect gauge.</strong> GPIO26 → R3 → gauge <strong>+</strong> terminal.
-        1.65 V midpoint → R4 → gauge <strong>−</strong> terminal.
-        Identify polarity by powering the ESP32, running <code>dacWrite(26, 200)</code>, and confirming
-        the needle deflects positive. Swap leads if it deflects negative.
+        <strong>Series resistors.</strong> Connect U1A output &#x2192; R3 (~3&thinsp;k&#937;) &#x2192; gauge (+) terminal.
+        Connect U1B output &#x2192; R4 (~3&thinsp;k&#937;) &#x2192; gauge (&#x2212;) terminal.
+        Set R3 and R4 with a multimeter to ~3&thinsp;k&#937; each <em>before</em> connecting the gauge.
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-text">
-        <strong>Flash firmware.</strong> Open project in PlatformIO and run <code>pio run -t upload</code>.
-        On first boot the ESP32 opens a WiFi AP named <strong>TideGauge</strong>. Connect and enter your
-        WiFi credentials in the captive portal.
+        <strong>Connect gauge.</strong> GPIO26 side &#x2192; gauge (+), GPIO25 side &#x2192; gauge (&#x2212;).
+        Confirm polarity on the test page (<code>/test</code>) by setting DAC to 255 and verifying the needle deflects right (positive).
+        Swap leads if reversed.
       </div>
     </div>
     <div class="step">
       <div class="step-num">5</div>
       <div class="step-text">
-        <strong>Boot sweep.</strong> Watch the needle sweep center → full positive → full negative → center.
-        This confirms the gauge drive is working before any tide data is fetched.
+        <strong>Flash firmware.</strong> Run <code>~/.platformio/penv/bin/pio run -t upload</code> (pio is not in PATH).
+        On first boot the ESP32 opens a WiFi AP named <strong>TideGauge</strong> — connect and enter your WiFi credentials in the captive portal.
       </div>
     </div>
     <div class="step">
       <div class="step-num">6</div>
       <div class="step-text">
-        <strong>Verify tide reading.</strong> Open <code>http://&lt;device-ip&gt;/</code> in a browser.
-        Compare the displayed tide level to the NOAA website for station 9444900.
-        The needle should center when tide equals MSL (8.35 ft above MLLW at Port Townsend).
+        <strong>Calibrate.</strong> Open the <code>/test</code> page. Set slider to 255: needle should reach full-scale right.
+        Set to 0: full-scale left. Adjust trimpots if not reaching full deflection.
+        Set to 128: needle should center. Adjust <code>DAC_CENTER</code> in firmware if off-center and reflash.
       </div>
     </div>
     <div class="step">
       <div class="step-num">7</div>
       <div class="step-text">
-        <strong>Zero adjustment.</strong> If the needle rests slightly off center when tide = MSL,
-        adjust <code>DAC_CENTER</code> in <code>src/main.cpp</code> (default 128) up or down by a few counts,
-        then reflash.
+        <strong>Boot sweep.</strong> After reset, the needle sweeps left &#x2192; right &#x2192; center, confirming gauge drive is working before tide data is fetched.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-text">
+        <strong>Verify tide.</strong> Open <code>http://&lt;device-ip&gt;/</code> in a browser.
+        Compare the displayed tide level to NOAA station 9444900.
+        The needle should center when tide equals MSL (8.35 ft above MLLW at Port Townsend).
       </div>
     </div>
   </div>
@@ -580,7 +667,7 @@
       </div>
       <div class="note-card blue">
         <h3>Weather</h3>
-        <p>Open-Meteo API — no key required. Fetches current temperature, wind, and WMO weather code every <code>15 min</code>. Coordinates: <code>48.115, −122.760</code> (Freeland WA).</p>
+        <p>Open-Meteo API — no key required. Fetches current temperature, wind, and WMO weather code every <code>15 min</code>. Coordinates: <code>48.115, &#x2212;122.760</code> (Freeland WA).</p>
       </div>
       <div class="note-card">
         <h3>Web Page</h3>
@@ -616,9 +703,11 @@ upload_speed  = 921600</pre></div>
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="code-content"><pre><span class="hl-comment">// ── Pin / scale ──────────────────────────────</span>
-<span class="hl-key">#define</span> DAC_PIN       <span class="hl-num">26</span>    <span class="hl-comment">// GPIO26 (DAC2) → R3 → gauge (+)</span>
-<span class="hl-key">#define</span> DAC_REF_PIN   <span class="hl-num">25</span>    <span class="hl-comment">// GPIO25 (DAC1) → R4 → gauge (−), fixed 1.65 V</span>
+<span class="hl-key">#define</span> DAC_PIN       <span class="hl-num">26</span>    <span class="hl-comment">// GPIO26 (DAC2) → MCP6002 U1A → R3 → gauge (+)</span>
+<span class="hl-key">#define</span> DAC_REF_PIN   <span class="hl-num">25</span>    <span class="hl-comment">// GPIO25 (DAC1) → MCP6002 U1B → R4 → gauge (−)</span>
 <span class="hl-key">#define</span> DAC_CENTER    <span class="hl-num">128</span>   <span class="hl-comment">// 1.65 V mid-point → needle at center</span>
+<span class="hl-key">#define</span> DAC_POS       <span class="hl-num">255</span>   <span class="hl-comment">// full positive — op-amp buffers enable full rail</span>
+<span class="hl-key">#define</span> DAC_NEG         <span class="hl-num">0</span>   <span class="hl-comment">// full negative</span>
 <span class="hl-key">#define</span> TIDE_SCALE_FT <span class="hl-num">8.0f</span>  <span class="hl-comment">// ±8 ft from MSL = full deflection</span>
 <span class="hl-key">#define</span> NOAA_MSL_FT   <span class="hl-num">8.35f</span> <span class="hl-comment">// Port Townsend MSL above MLLW</span>
 
@@ -631,8 +720,8 @@ upload_speed  = 921600</pre></div>
 uint8_t tideToDAC(float deltaMSL) {
   float clamped    = constrain(deltaMSL, -TIDE_SCALE_FT, TIDE_SCALE_FT);
   float normalized = clamped / TIDE_SCALE_FT; <span class="hl-comment">// −1.0 to +1.0</span>
-  int   dac        = DAC_CENTER + (int)(normalized * 127.0f);
-  return (uint8_t)constrain(dac, 0, 255);
+  int   dac        = DAC_CENTER + (int)(normalized * (DAC_POS - DAC_CENTER));
+  return (uint8_t)constrain(dac, DAC_NEG, DAC_POS);
 }</pre></div>
     </div>
 
