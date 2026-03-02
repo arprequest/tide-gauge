@@ -3,7 +3,7 @@
 //
 // Hardware:
 //   GPIO26 (DAC2) → ~3kΩ → galvanometer (+)
-//   Voltage divider (3.3V → two 10kΩ → GND, mid = 1.65V) → ~3kΩ → galvanometer (−)
+//   GPIO25 (DAC1, fixed DAC 128 = 1.65V) → ~3kΩ → galvanometer (−)
 //
 //   DAC value 128 = 1.65V = center (0 tide delta from MSL)
 //   DAC value 255 = 3.3V  = full positive (high tide)
@@ -27,8 +27,11 @@
 #include <time.h>
 
 // ── Pin / hardware constants ──────────────────────────────────────
-#define DAC_PIN       26
-#define DAC_CENTER    128    // 1.65V mid-point
+#define DAC_PIN       26     // GPIO26 (DAC2) → R3 (3kΩ) → gauge (+)
+#define DAC_REF_PIN   25     // GPIO25 (DAC1) → R4 (1.6kΩ) → gauge (−), mirrors DAC_PIN inverted
+#define DAC_CENTER    128    // mid-point — both DACs equal → no current
+#define DAC_POS       245    // full positive deflection (~500µA = gauge FSD, needle at 18/50)
+#define DAC_NEG        10    // full negative deflection
 #define TIDE_SCALE_FT 8.0f  // ±8 ft from MSL = full deflection
 #define NOAA_MSL_FT   8.35f // Port Townsend MSL above MLLW
 
@@ -74,6 +77,8 @@ WebServer server(80);
 unsigned long lastTideFetch    = 0;
 unsigned long lastWeatherFetch = 0;
 unsigned long lastNeedleUpdate = 0;
+unsigned long lastTestCommand  = 0;
+#define TEST_MODE_TIMEOUT 15000UL  // suppress loop needle updates for 15s after test command
 
 // ═══════════════════════════════════════════════════════════════════
 // DAC helpers
@@ -84,29 +89,34 @@ unsigned long lastNeedleUpdate = 0;
 uint8_t tideToDAC(float deltaMSL) {
   float clamped = constrain(deltaMSL, -TIDE_SCALE_FT, TIDE_SCALE_FT);
   float normalized = clamped / TIDE_SCALE_FT; // −1.0 to +1.0
-  int dac = DAC_CENTER + (int)(normalized * 127.0f);
-  return (uint8_t)constrain(dac, 0, 255);
+  int dac = DAC_CENTER + (int)(normalized * (DAC_POS - DAC_CENTER));
+  return (uint8_t)constrain(dac, DAC_NEG, DAC_POS);
 }
 
+// Push-pull: GPIO26 and GPIO25 move in opposite directions.
+// At center (128) both output ~1.65V → zero differential.
+// Inverting GPIO25 doubles the swing and cancels DAC offset asymmetry.
 void setNeedle(uint8_t dacVal) {
-  dacWrite(DAC_PIN, dacVal);
+  dacWrite(DAC_PIN,     dacVal);
+  dacWrite(DAC_REF_PIN, 255 - dacVal);
 }
 
 // Boot sweep: full left → full right → center
 void bootSweep() {
-  // Snap to full negative (left)
-  setNeedle(0);
-  delay(200);
+  // Snap to full negative (left) and hold for needle to settle
+  setNeedle(DAC_NEG);
+  delay(600);
   // Sweep full left to full right
-  for (int i = 0; i <= 255; i += 3) {
+  for (int i = DAC_NEG; i <= DAC_POS; i += 2) {
     setNeedle(i);
-    delay(12);
+    delay(10);
   }
-  delay(150);
+  // Hold at full positive so needle reaches the stop
+  delay(600);
   // Return to center
-  for (int i = 255; i >= DAC_CENTER; i -= 3) {
+  for (int i = DAC_POS; i >= DAC_CENTER; i -= 2) {
     setNeedle(i);
-    delay(12);
+    delay(10);
   }
   setNeedle(DAC_CENTER);
 }
@@ -463,6 +473,72 @@ void handleReset() {
   ESP.restart();
 }
 
+void handleTest() {
+  // If a 'dac' param is present, apply it immediately
+  if (server.hasArg("dac")) {
+    int val = server.arg("dac").toInt();
+    val = constrain(val, 0, 255);
+    setNeedle((uint8_t)val);
+    lastTestCommand = millis();  // suppress loop override for 15s
+    server.send(200, "text/plain", "OK");
+    return;
+  }
+
+  String html = R"rawhtml(<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gauge Test</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, sans-serif; background: #0d1117; color: #c9d1d9;
+         min-height: 100vh; display: flex; flex-direction: column;
+         align-items: center; justify-content: center; padding: 24px; gap: 20px; }
+  h1 { color: #58a6ff; font-size: 1.3rem; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+          padding: 20px; width: 100%; max-width: 400px; }
+  .dac-display { font-size: 3rem; font-weight: 700; text-align: center;
+                 color: #f0f6fc; margin-bottom: 16px; }
+  input[type=range] { width: 100%; accent-color: #58a6ff; cursor: pointer; height: 8px; }
+  .presets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 16px; }
+  button { padding: 10px; border-radius: 6px; border: 1px solid #30363d;
+           background: #21262d; color: #c9d1d9; font-size: 0.9rem;
+           cursor: pointer; transition: background 0.15s; }
+  button:hover { background: #58a6ff; color: #fff; border-color: #58a6ff; }
+  .label { font-size: 0.75rem; color: #8b949e; text-align: center; margin-top: 4px; }
+  a { color: #58a6ff; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<h1>&#127754; Gauge Test</h1>
+<div class="card">
+  <div class="dac-display" id="val">128</div>
+  <input type="range" min="0" max="255" value="128" id="slider" oninput="update(this.value)">
+  <div class="label">DAC value (0 = full left &nbsp;|&nbsp; 128 = center &nbsp;|&nbsp; 255 = full right)</div>
+  <div class="presets">
+    <button onclick="set(100)">Full Left<br><small>DAC 100</small></button>
+    <button onclick="set(128)">Center<br><small>DAC 128</small></button>
+    <button onclick="set(150)">Full Right<br><small>DAC 150</small></button>
+  </div>
+</div>
+<a href="/">&#8592; Back to tide page</a>
+<script>
+  function update(v) {
+    document.getElementById('val').textContent = v;
+    fetch('/test?dac=' + v);
+  }
+  function set(v) {
+    document.getElementById('slider').value = v;
+    update(v);
+  }
+</script>
+</body>
+</html>)rawhtml";
+
+  server.send(200, "text/html", html);
+}
+
 void handle404() {
   server.send(404, "text/plain", "Not found");
 }
@@ -475,7 +551,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("\n[TideGauge] Booting...");
 
-  dacWrite(DAC_PIN, DAC_CENTER);  // center needle while connecting
+  setNeedle(DAC_CENTER);  // center needle while connecting
 
   // ── WiFiManager ──────────────────────────────────────────────
   WiFiManager wm;
@@ -514,6 +590,7 @@ void setup() {
 
   // ── Web server ───────────────────────────────────────────────
   server.on("/", handleRoot);
+  server.on("/test", handleTest);
   server.on("/reset", handleReset);
   server.onNotFound(handle404);
   server.begin();
@@ -541,7 +618,7 @@ void loop() {
 
   if (now - lastNeedleUpdate >= DISPLAY_INTERVAL_MS) {
     lastNeedleUpdate = now;
-    if (tideState.valid) {
+    if (tideState.valid && (now - lastTestCommand >= TEST_MODE_TIMEOUT)) {
       setNeedle(tideToDAC(tideState.deltaMSL));
     }
   }

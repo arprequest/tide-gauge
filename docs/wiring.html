@@ -312,53 +312,19 @@
             font-size="9" fill="#fff">3V3</text>
 
       <!-- Right-side pins -->
-      <!-- GPIO26 -->
+      <!-- GPIO25 (DAC1) — fixed reference -->
+      <rect x="170" y="196" width="30" height="16" rx="3" fill="#b45309"/>
+      <text x="185" y="208" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#fff">IO25</text>
+      <text x="163" y="208" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#555">DAC1</text>
+
+      <!-- GPIO26 (DAC2) — tide signal -->
       <rect x="170" y="220" width="30" height="16" rx="3" fill="#16a34a"/>
       <text x="185" y="232" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#fff">IO26</text>
       <text x="163" y="232" text-anchor="end" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#555">DAC2</text>
-
-      <!-- ── Voltage Divider ─────────────────────────────────────── -->
-      <!-- 3.3V rail top -->
-      <rect x="310" y="120" width="80" height="22" rx="4" fill="#dc2626" opacity="0.9"/>
-      <text x="350" y="135" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" font-weight="700" fill="#fff">3.3 V</text>
-
-      <!-- R1 top (10kΩ) -->
-      <rect x="328" y="158" width="44" height="18" rx="3" fill="#fff" stroke="#999" stroke-width="1.5"/>
-      <text x="350" y="171" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#333">10 kΩ</text>
-
-      <!-- midpoint dot -->
-      <circle cx="350" cy="200" r="5" fill="#b45309"/>
-      <text x="362" y="204" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#b45309" font-weight="700">1.65 V</text>
-
-      <!-- R2 bottom (10kΩ) -->
-      <rect x="328" y="213" width="44" height="18" rx="3" fill="#fff" stroke="#999" stroke-width="1.5"/>
-      <text x="350" y="226" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#333">10 kΩ</text>
-
-      <!-- GND bottom rail -->
-      <rect x="318" y="246" width="64" height="18" rx="4" fill="#1a1a1a" opacity="0.85"/>
-      <text x="350" y="259" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" font-weight="700" fill="#fff">GND</text>
-
-      <!-- Vertical wires in divider -->
-      <line x1="350" y1="142" x2="350" y2="158" stroke="#dc2626" stroke-width="2"/>
-      <line x1="350" y1="176" x2="350" y2="200" stroke="#999" stroke-width="2"/>
-      <line x1="350" y1="200" x2="350" y2="213" stroke="#999" stroke-width="2"/>
-      <line x1="350" y1="231" x2="350" y2="246" stroke="#555" stroke-width="2"/>
-
-      <!-- 3.3V source from ESP32 -->
-      <line x1="70" y1="192" x2="70" y2="100" stroke="#dc2626" stroke-width="2"/>
-      <line x1="70" y1="100" x2="350" y2="100" stroke="#dc2626" stroke-width="2"/>
-      <line x1="350" y1="100" x2="350" y2="120" stroke="#dc2626" stroke-width="2"/>
-
-      <!-- GND from ESP32 -->
-      <line x1="55" y1="160" x2="55" y2="82" stroke="#333" stroke-width="2"/>
-      <line x1="55" y1="82" x2="490" y2="82" stroke="#333" stroke-width="2" stroke-dasharray="4,2"/>
 
       <!-- ── Series resistor R3 (3kΩ) on GPIO26 side ───────────── -->
       <rect x="226" y="220" width="52" height="18" rx="3" fill="#fff" stroke="#999" stroke-width="1.5"/>
@@ -374,17 +340,22 @@
       <line x1="278" y1="228" x2="450" y2="228" stroke="#16a34a" stroke-width="2"
             marker-end="url(#arrow-green)"/>
 
-      <!-- ── Series resistor R4 (3kΩ) on ref side ─────────────── -->
-      <rect x="406" y="190" width="52" height="18" rx="3" fill="#fff" stroke="#999" stroke-width="1.5"/>
-      <text x="432" y="203" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <!-- ── Series resistor R4 (3kΩ) on GPIO25 ref side ──────── -->
+      <rect x="370" y="196" width="52" height="18" rx="3" fill="#fff" stroke="#999" stroke-width="1.5"/>
+      <text x="396" y="209" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="10" fill="#333">3 kΩ</text>
-      <text x="432" y="186" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <text x="396" y="192" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#b45309">R4</text>
 
-      <!-- 1.65V midpoint → R4 -->
-      <line x1="393" y1="200" x2="406" y2="199" stroke="#b45309" stroke-width="2"/>
+      <!-- GPIO25 → R4 -->
+      <line x1="200" y1="204" x2="370" y2="204" stroke="#b45309" stroke-width="2"
+            marker-end="url(#arrow-orange)"/>
+      <!-- 1.65V callout on wire -->
+      <circle cx="285" cy="204" r="4" fill="#b45309"/>
+      <text x="285" y="194" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#b45309" font-weight="700">1.65 V</text>
       <!-- R4 → gauge- -->
-      <line x1="458" y1="199" x2="490" y2="262" stroke="#b45309" stroke-width="2"
+      <line x1="422" y1="205" x2="490" y2="262" stroke="#b45309" stroke-width="2"
             marker-end="url(#arrow-orange)"/>
 
       <!-- ── Galvanometer ─────────────────────────────────────── -->
@@ -430,34 +401,25 @@
       <text x="568" y="296" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#b45309" font-weight="700">−</text>
 
-      <!-- GND rail to gauge-negative terminal via divider bottom -->
-      <line x1="490" y1="82" x2="490" y2="316" stroke="#333" stroke-width="1.5" stroke-dasharray="4,2"/>
-
       <!-- ── Legend ─────────────────────────────────────────────── -->
-      <rect x="40" y="430" width="620" height="72" rx="6"
+      <rect x="40" y="430" width="620" height="56" rx="6"
             fill="#fff" stroke="#d4d4d4" stroke-width="1"/>
       <text x="60" y="448" font-family="IBM Plex Mono, monospace" font-size="10"
             font-weight="700" fill="#555" letter-spacing="1">LEGEND</text>
 
-      <line x1="60" y1="462" x2="100" y2="462" stroke="#16a34a" stroke-width="2"/>
-      <text x="108" y="466" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">GPIO26 → gauge+ (signal)</text>
+      <line x1="60" y1="466" x2="100" y2="466" stroke="#16a34a" stroke-width="2"/>
+      <text x="108" y="470" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">GPIO26 (DAC2) → R3 → gauge+ (tide signal)</text>
 
-      <line x1="60" y1="480" x2="100" y2="480" stroke="#b45309" stroke-width="2"/>
-      <text x="108" y="484" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">1.65 V ref → gauge− (center bias)</text>
-
-      <line x1="310" y1="462" x2="350" y2="462" stroke="#dc2626" stroke-width="2"/>
-      <text x="358" y="466" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">3.3 V power</text>
-
-      <line x1="310" y1="480" x2="350" y2="480" stroke="#333" stroke-width="2" stroke-dasharray="4,2"/>
-      <text x="358" y="484" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">GND</text>
+      <line x1="360" y1="466" x2="400" y2="466" stroke="#b45309" stroke-width="2"/>
+      <text x="408" y="470" font-family="IBM Plex Mono, monospace" font-size="10" fill="#555">GPIO25 (DAC1, fixed DAC 128) → R4 → gauge−</text>
 
       <!-- ── Title / caption ────────────────────────────────────── -->
       <text x="350" y="30" text-anchor="middle" font-family="Archivo Black, sans-serif"
             font-size="14" fill="#2563eb" letter-spacing="1">TIDE GAUGE — CENTER-ZERO DRIVE</text>
       <text x="350" y="50" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#888">GPIO26 (DAC2) differential drive · MSL = DAC 128 (1.65 V)</text>
+            font-size="10" fill="#888">GPIO26 (DAC2) signal · GPIO25 (DAC1) fixed 1.65 V reference · no voltage divider</text>
       <text x="350" y="66" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="10" fill="#888">+8 ft from MSL = DAC 255  ·  −8 ft from MSL = DAC 0</text>
+            font-size="10" fill="#888">+8 ft from MSL = DAC 255  ·  −8 ft from MSL = DAC 0  ·  MSL = DAC 128</text>
     </svg>
   </div>
 
@@ -468,21 +430,21 @@
       <p>DAC range 0–3.3 V. At DAC 128 the output is 1.65 V — same as the reference side — so no current flows and the needle sits at center.</p>
     </div>
     <div class="note-card amber">
-      <h3>Voltage Divider (gauge −)</h3>
-      <p>Two <code>10 kΩ</code> resistors from 3.3 V to GND produce a stable 1.65 V reference.</p>
-      <p>This feeds the negative terminal through a matching <code>3 kΩ</code> series resistor, so both sides see the same source impedance.</p>
+      <h3>GPIO25 Reference (gauge −)</h3>
+      <p>GPIO25 (DAC1) is set to a fixed DAC value of 128 (1.65 V) in firmware and never changes.</p>
+      <p>This provides a low-impedance mid-rail reference. Both sides now see the same DAC source impedance, giving ~2× more deflection than a passive voltage divider.</p>
     </div>
     <div class="note-card blue">
       <h3>Current Calculation</h3>
       <p>Max differential voltage = 1.65 V (when DAC at 0 or 255).</p>
-      <p>Total series resistance ≈ 6 kΩ (3 kΩ each side).<br>
-         Peak current ≈ <code>1.65 V ÷ 6 kΩ ≈ 0.28 mA</code>.<br>
-         Gauge rated ±0.5 mA, so this is well within safe range.</p>
+      <p>Total series resistance = 6 kΩ (R3 + R4, 3 kΩ each).<br>
+         Both sides are DAC outputs (low impedance).<br>
+         Peak current ≈ <code>1.65 V ÷ 6 kΩ ≈ 0.28 mA</code> ≈ 55% of rated ±0.5 mA.</p>
     </div>
     <div class="note-card red">
       <h3>Calibration</h3>
-      <p>If the needle rests off-center with no tide data, trim the 1.65 V reference with a <code>10 kΩ trimpot</code> in place of one of the fixed resistors.</p>
-      <p>In firmware: adjust <code>DAC_CENTER</code> (default 128) to shift zero point.</p>
+      <p>If the needle rests off-center with no tide data, adjust <code>DAC_CENTER</code> (default 128) in <code>src/main.cpp</code> up or down by a few counts and reflash.</p>
+      <p>The reference pin (<code>DAC_REF_PIN</code>) is always written to match <code>DAC_CENTER</code>, so both sides track together.</p>
     </div>
     <div class="note-card purple">
       <h3>Tide Scale</h3>
@@ -537,7 +499,6 @@
       <tr><td class="bom-qty">1</td><td>ESP32-WROOM-32 dev board</td><td>Any 38-pin ESP32 devkit works</td></tr>
       <tr><td class="bom-qty">1</td><td>Center-zero galvanometer</td><td>±0.5 mA end scale ("Yards Per Second")</td></tr>
       <tr><td class="bom-qty">2</td><td>Resistor 3 kΩ</td><td>R3 &amp; R4 — series limiters (use 2.7 kΩ–3.3 kΩ)</td></tr>
-      <tr><td class="bom-qty">2</td><td>Resistor 10 kΩ</td><td>R1 &amp; R2 — voltage divider (or use one 10 kΩ trimpot + one 10 kΩ fixed)</td></tr>
       <tr><td class="bom-qty">1</td><td>Mini breadboard or perfboard</td><td>For the voltage divider</td></tr>
       <tr><td class="bom-qty">1</td><td>USB-C cable + 5 V supply</td><td>Powers ESP32</td></tr>
       <tr><td class="bom-qty">—</td><td>Hook-up wire</td><td>26–28 AWG stranded</td></tr>
@@ -552,8 +513,8 @@
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-text">
-        <strong>Voltage divider.</strong> Connect two <code>10 kΩ</code> resistors in series between 3.3 V and GND.
-        The midpoint gives a stable 1.65 V reference. Verify with a multimeter before connecting the gauge.
+        <strong>GPIO25 reference.</strong> GPIO25 (DAC1) is configured in firmware as a fixed 1.65 V reference (DAC 128).
+        No external voltage divider needed — just wire <strong>GPIO25 → R4 → gauge −</strong>.
       </div>
     </div>
     <div class="step">
@@ -655,7 +616,8 @@ upload_speed  = 921600</pre></div>
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="code-content"><pre><span class="hl-comment">// ── Pin / scale ──────────────────────────────</span>
-<span class="hl-key">#define</span> DAC_PIN       <span class="hl-num">26</span>
+<span class="hl-key">#define</span> DAC_PIN       <span class="hl-num">26</span>    <span class="hl-comment">// GPIO26 (DAC2) → R3 → gauge (+)</span>
+<span class="hl-key">#define</span> DAC_REF_PIN   <span class="hl-num">25</span>    <span class="hl-comment">// GPIO25 (DAC1) → R4 → gauge (−), fixed 1.65 V</span>
 <span class="hl-key">#define</span> DAC_CENTER    <span class="hl-num">128</span>   <span class="hl-comment">// 1.65 V mid-point → needle at center</span>
 <span class="hl-key">#define</span> TIDE_SCALE_FT <span class="hl-num">8.0f</span>  <span class="hl-comment">// ±8 ft from MSL = full deflection</span>
 <span class="hl-key">#define</span> NOAA_MSL_FT   <span class="hl-num">8.35f</span> <span class="hl-comment">// Port Townsend MSL above MLLW</span>
