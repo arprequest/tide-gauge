@@ -45,10 +45,6 @@
 static const char* NOAA_HOST = "api.tidesandcurrents.noaa.gov";
 static const char* NOAA_STATION = "9444900";
 
-// ── Open-Meteo API ────────────────────────────────────────────────
-static const float LAT = 48.115f;
-static const float LON = -122.760f;
-
 // ── Poll intervals ────────────────────────────────────────────────
 #define TIDE_INTERVAL_MS    360000UL  //  6 minutes
 #define WEATHER_INTERVAL_MS 900000UL  // 15 minutes
@@ -65,17 +61,17 @@ struct TideState {
   bool  valid = false;
 };
 
-struct WeatherState {
-  float tempF       = 0.0f;
-  float windMph     = 0.0f;
-  float windDirDeg  = 0.0f;
-  String condition  = "--";
-  String fetchedAt  = "--";
+struct MeteoState {
+  float tempF          = 0.0f;
+  float windKnots      = 0.0f;
+  float windGustKnots  = 0.0f;
+  String windDirLabel  = "--";
+  String fetchedAt     = "--";
   bool  valid = false;
 };
 
-TideState   tideState;
-WeatherState weatherState;
+TideState  tideState;
+MeteoState meteoState;
 
 WebServer server(80);
 
@@ -250,72 +246,61 @@ void fetchTide() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Open-Meteo weather fetch
+// NOAA meteorological fetch (air temp + wind from station 9444900)
 // ═══════════════════════════════════════════════════════════════════
 
-static const char* WMO_CODE_MAP[] = {
-  // index = WMO code, but sparse — use a switch below
-};
-
-String wmoDescription(int code) {
-  switch (code) {
-    case 0:  return "Clear sky";
-    case 1:  return "Mainly clear";
-    case 2:  return "Partly cloudy";
-    case 3:  return "Overcast";
-    case 45: case 48: return "Fog";
-    case 51: case 53: case 55: return "Drizzle";
-    case 61: case 63: case 65: return "Rain";
-    case 71: case 73: case 75: return "Snow";
-    case 80: case 81: case 82: return "Showers";
-    case 95: return "Thunderstorm";
-    default: return "Unknown (" + String(code) + ")";
-  }
-}
-
-String windDirection(float deg) {
-  const char* dirs[] = {"N","NE","E","SE","S","SW","W","NW"};
-  int idx = (int)((deg + 22.5f) / 45.0f) % 8;
-  return String(dirs[idx]);
-}
-
-void fetchWeather() {
+void fetchMeteo() {
   WiFiClientSecure client;
   client.setInsecure();
-
-  char url[256];
-  snprintf(url, sizeof(url),
-    "https://api.open-meteo.com/v1/forecast"
-    "?latitude=%.3f&longitude=%.3f"
-    "&current=temperature_2m,weathercode,windspeed_10m,winddirection_10m"
-    "&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=America%%2FLos_Angeles",
-    LAT, LON);
-
   HTTPClient http;
-  http.begin(client, url);
-  int code = http.GET();
 
-  if (code == 200) {
+  // ── Air temperature ───────────────────────────────────────────
+  String tUrl = String("https://") + NOAA_HOST +
+    "/api/prod/datagetter?station=" + NOAA_STATION +
+    "&product=air_temperature&time_zone=gmt&units=english&format=json&range=1";
+  http.begin(client, tUrl);
+  if (http.GET() == 200) {
     String body = http.getString();
     JsonDocument doc;
-    DeserializationError err = deserializeJson(doc, body);
-    if (!err) {
-      JsonObject cur = doc["current"];
-      weatherState.tempF      = cur["temperature_2m"].as<float>();
-      weatherState.windMph    = cur["windspeed_10m"].as<float>();
-      weatherState.windDirDeg = cur["winddirection_10m"].as<float>();
-      weatherState.condition  = wmoDescription(cur["weathercode"].as<int>());
-      weatherState.valid      = true;
+    if (!deserializeJson(doc, body)) {
+      JsonArray data = doc["data"].as<JsonArray>();
+      if (data.size() > 0) {
+        const char* v = data[data.size() - 1]["v"];
+        if (v && strcmp(v, "NaN") != 0)
+          meteoState.tempF = String(v).toFloat();
+      }
     }
   }
   http.end();
 
-  weatherState.fetchedAt = nowString();
-  Serial.printf("[Weather] %.1f°F, %s %.1f mph, %s\n",
-    weatherState.tempF,
-    windDirection(weatherState.windDirDeg).c_str(),
-    weatherState.windMph,
-    weatherState.condition.c_str());
+  // ── Wind ──────────────────────────────────────────────────────
+  String wUrl = String("https://") + NOAA_HOST +
+    "/api/prod/datagetter?station=" + NOAA_STATION +
+    "&product=wind&time_zone=gmt&units=english&format=json&range=1";
+  http.begin(client, wUrl);
+  if (http.GET() == 200) {
+    String body = http.getString();
+    JsonDocument doc;
+    if (!deserializeJson(doc, body)) {
+      JsonArray data = doc["data"].as<JsonArray>();
+      if (data.size() > 0) {
+        JsonObject latest = data[data.size() - 1];
+        const char* s  = latest["s"];   // speed (knots)
+        const char* g  = latest["g"];   // gust  (knots)
+        const char* dr = latest["dr"];  // direction label e.g. "NW"
+        if (s  && strcmp(s,  "NaN") != 0) meteoState.windKnots     = String(s).toFloat();
+        if (g  && strcmp(g,  "NaN") != 0) meteoState.windGustKnots = String(g).toFloat();
+        if (dr)                           meteoState.windDirLabel   = String(dr);
+      }
+    }
+  }
+  http.end();
+
+  meteoState.valid     = true;
+  meteoState.fetchedAt = nowString();
+  Serial.printf("[Meteo] %.1f°F  wind %s %.1f kt  gust %.1f kt\n",
+    meteoState.tempF, meteoState.windDirLabel.c_str(),
+    meteoState.windKnots, meteoState.windGustKnots);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -387,7 +372,7 @@ void handleRoot() {
 </head>
 <body>
 <h1>&#127754; Tide Gauge</h1>
-<div class="subtitle">Port Townsend, WA &mdash; Station 9444900 &mdash; Freeland WA reference</div>
+<div class="subtitle">Port Townsend, WA &mdash; NOAA Station 9444900</div>
 )rawhtml";
 
   // ── Tide card ──
@@ -424,28 +409,35 @@ void handleRoot() {
   html += "<div class=\"fetched\">Updated " + tideState.fetchedAt + "</div>";
   html += "</div>";
 
-  // ── Weather card ──
-  html += "<div class=\"card\">";
-  html += "<h2>Current Weather &mdash; Freeland WA</h2>";
+  // ── Tide chart card (browser fetches NOAA predictions and renders SVG) ──
+  html += "<div class=\"card\"><h2>48-Hour Tide Prediction</h2>"
+          "<div id=\"tc\" style=\"color:#8b949e;font-size:0.8rem\">Loading chart&hellip;</div>"
+          "<div class=\"fetched\">NOAA station 9444900 &bull; predictions in local time</div>"
+          "</div>";
 
-  if (weatherState.valid) {
+  // ── Met card (NOAA observations) ──
+  html += "<div class=\"card\">";
+  html += "<h2>Conditions at Port Townsend &mdash; NOAA Station 9444900</h2>";
+
+  if (meteoState.valid) {
     char buf[32];
-    snprintf(buf, sizeof(buf), "%.1f", weatherState.tempF);
+    snprintf(buf, sizeof(buf), "%.1f", meteoState.tempF);
     html += "<div><span class=\"big-value\">" + String(buf) + "</span><span class=\"big-unit\">&deg;F</span></div>";
-    html += "<div style=\"margin-top:6px;color:#8b949e\">" + weatherState.condition + "</div>";
     html += "<div style=\"margin-top:10px\" class=\"row\">";
     html += "<div class=\"col\"><div class=\"stat-label\">Wind</div>";
-    snprintf(buf, sizeof(buf), "%.1f mph", weatherState.windMph);
+    snprintf(buf, sizeof(buf), "%.1f kt", meteoState.windKnots);
     html += "<div class=\"stat-value\">" + String(buf) + "</div></div>";
     html += "<div class=\"col\"><div class=\"stat-label\">Direction</div>";
-    html += "<div class=\"stat-value\">" + windDirection(weatherState.windDirDeg) +
-            " (" + String((int)weatherState.windDirDeg) + "&deg;)</div></div>";
+    html += "<div class=\"stat-value\">" + meteoState.windDirLabel + "</div></div>";
+    html += "<div class=\"col\"><div class=\"stat-label\">Gust</div>";
+    snprintf(buf, sizeof(buf), "%.1f kt", meteoState.windGustKnots);
+    html += "<div class=\"stat-value\">" + String(buf) + "</div></div>";
     html += "</div>";
   } else {
     html += "<div style=\"color:#8b949e\">Fetching&hellip;</div>";
   }
 
-  html += "<div class=\"fetched\">Updated " + weatherState.fetchedAt + "</div>";
+  html += "<div class=\"fetched\">Updated " + meteoState.fetchedAt + "</div>";
   html += "</div>";
 
   // ── WiFi card ──
@@ -460,6 +452,64 @@ void handleRoot() {
   html += "</div>";
 
   html += "<div style=\"font-size:0.7rem;color:#484f58;text-align:center\">Page auto-refreshes every 30 s</div>";
+
+  // Inject current tide values for the chart renderer
+  char chartVars[64];
+  snprintf(chartVars, sizeof(chartVars), "<script>const CF=%.2f,MF=%.2f;", tideState.currentFt, NOAA_MSL_FT);
+  html += String(chartVars);
+
+  // Chart renderer — browser fetches 48h hourly predictions from NOAA and draws an SVG
+  html += R"rawjs(
+(async()=>{
+const el=document.getElementById('tc');
+try{
+const r=await fetch('https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9444900&product=predictions&datum=MLLW&time_zone=gmt&interval=h&units=english&format=json&range=48');
+if(!r.ok)throw 0;
+const{predictions:P}=await r.json();
+const vs=P.map(p=>+p.v),lo=Math.min(...vs)-.3,hi=Math.max(...vs)+.3;
+const W=560,H=155,PL=30,PB=22,PT=6,PR=4,cw=W-PL-PR,ch=H-PT-PB;
+const ts=P.map(p=>new Date(p.t.replace(' ','T')+'Z').getTime());
+const t0=ts[0],t1=ts[ts.length-1];
+const tx=t=>(PL+cw*(t-t0)/(t1-t0)).toFixed(1);
+const ty=v=>(PT+ch*(1-(v-lo)/(hi-lo))).toFixed(1);
+const now=Date.now();
+let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;border-radius:4px">`;
+const mY=+ty(MF);
+s+=`<line x1="${PL}" y1="${mY}" x2="${W-PR}" y2="${mY}" stroke="#484f58" stroke-width="1" stroke-dasharray="4,3"/>`;
+s+=`<text x="2" y="${mY+3}" font-size="8" fill="#484f58">MSL</text>`;
+const path=P.map((p,i)=>(i?'L':'M')+tx(ts[i])+','+ty(vs[i])).join('');
+s+=`<path d="${path} L${tx(t1)},${H-PB} L${PL},${H-PB}Z" fill="rgba(33,150,243,.1)"/>`;
+s+=`<path d="${path}" fill="none" stroke="#2196F3" stroke-width="2" stroke-linejoin="round"/>`;
+const nx=+tx(now);
+if(nx>PL&&nx<W-PR){
+  s+=`<line x1="${nx}" y1="${PT}" x2="${nx}" y2="${H-PB}" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2"/>`;
+  if(CF>0)s+=`<circle cx="${nx}" cy="${ty(CF)}" r="4" fill="#3fb950" stroke="#161b22" stroke-width="1.5"/>`;
+}
+for(let i=1;i<P.length-1;i++){
+  if(vs[i]>vs[i-1]&&vs[i]>vs[i+1])s+=`<text x="${tx(ts[i])}" y="${+ty(vs[i])-5}" text-anchor="middle" font-size="9" fill="#3fb950">${vs[i].toFixed(1)}</text>`;
+  else if(vs[i]<vs[i-1]&&vs[i]<vs[i+1])s+=`<text x="${tx(ts[i])}" y="${+ty(vs[i])+11}" text-anchor="middle" font-size="9" fill="#f78166">${vs[i].toFixed(1)}</text>`;
+}
+for(let t=t0;t<=t1;t+=6*3600000){
+  const x=+tx(t);
+  if(x>PL+5&&x<W-5){
+    const d=new Date(t);
+    const lbl=d.getHours()===0?`${d.getMonth()+1}/${d.getDate()}`:d.getHours().toString().padStart(2,'0')+':00';
+    s+=`<text x="${x}" y="${H-5}" text-anchor="middle" font-size="8" fill="#8b949e">${lbl}</text>`;
+  }
+}
+for(let v=Math.ceil(lo/2)*2;v<=hi;v+=2){
+  const y=+ty(v);
+  s+=`<text x="${PL-3}" y="${y+3}" text-anchor="end" font-size="8" fill="#8b949e">${v}</text>`;
+}
+s+=`<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="#30363d"/>`;
+s+=`<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#30363d"/>`;
+s+='</svg>';
+el.innerHTML=s;
+}catch(e){el.innerHTML='<span style="color:#484f58;font-size:.8rem">Chart unavailable</span>';}
+})();
+</script>
+)rawjs";
+
   html += "</body></html>";
 
   server.send(200, "text/html", html);
@@ -590,7 +640,7 @@ void setup() {
 
   // ── Initial data fetch ───────────────────────────────────────
   fetchTide();
-  fetchWeather();
+  fetchMeteo();
   setNeedle(tideToDAC(tideState.deltaMSL));
 
   // ── Web server ───────────────────────────────────────────────
@@ -618,7 +668,7 @@ void loop() {
 
   if (now - lastWeatherFetch >= WEATHER_INTERVAL_MS) {
     lastWeatherFetch = now;
-    fetchWeather();
+    fetchMeteo();
   }
 
   if (now - lastNeedleUpdate >= DISPLAY_INTERVAL_MS) {
