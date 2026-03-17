@@ -18,7 +18,7 @@
 //   MSL = 8.35 ft above MLLW
 //   Tidal range: ±8 ft from MSL → maps to full gauge deflection
 //
-// Web page: http://<device-ip>/
+// Web page: http://tidegauge.local/  (or http://<device-ip>/)
 //   Shows current tide, next high/low, weather, WiFi info, reset button
 // ═══════════════════════════════════════════════════════════════════
 
@@ -28,6 +28,7 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <WebServer.h>
+#include <ESPmDNS.h>
 #include <ArduinoJson.h>
 #include <time.h>
 
@@ -571,6 +572,14 @@ void setup() {
   }
   Serial.printf("[WiFi] Connected: %s  IP: %s\n",
     WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
+
+  // ── mDNS ─────────────────────────────────────────────────────
+  if (MDNS.begin("tidegauge")) {
+    MDNS.addService("http", "tcp", 80);
+    Serial.println("[mDNS] http://tidegauge.local/");
+  } else {
+    Serial.println("[mDNS] Failed to start");
+  }
 
   // ── NTP ──────────────────────────────────────────────────────
   configTime(-8 * 3600, 3600, "pool.ntp.org", "time.nist.gov");
