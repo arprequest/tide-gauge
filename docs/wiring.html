@@ -340,25 +340,18 @@
       <text x="251" y="175" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9" font-weight="700" fill="#7c3aed">MCP6002</text>
 
-      <!-- Pin numbers — DIP-8 / SOT-23-8 -->
-      <!-- U1B side (upper, amber) -->
-      <!-- Pin 5: U1B IN+ (left edge, upper) -->
-      <text x="210" y="188" font-family="IBM Plex Mono, monospace" font-size="7" fill="#b45309">5</text>
-      <!-- Pin 6: U1B IN− (left edge, lower) -->
-      <text x="210" y="204" font-family="IBM Plex Mono, monospace" font-size="7" fill="#b45309">6</text>
-      <!-- Pin 7: U1B OUT (right apex) -->
-      <text x="270" y="189" font-family="IBM Plex Mono, monospace" font-size="7" fill="#b45309">7</text>
-      <!-- U1A side (lower, green) -->
-      <!-- Pin 3: U1A IN+ (left edge, upper) -->
-      <text x="210" y="228" font-family="IBM Plex Mono, monospace" font-size="7" fill="#16a34a">3</text>
-      <!-- Pin 2: U1A IN− (left edge, lower) -->
-      <text x="210" y="244" font-family="IBM Plex Mono, monospace" font-size="7" fill="#16a34a">2</text>
-      <!-- Pin 1: U1A OUT (right apex) -->
-      <text x="270" y="229" font-family="IBM Plex Mono, monospace" font-size="7" fill="#16a34a">1</text>
-      <!-- Pin 8: VCC (top of chip) -->
-      <text x="256" y="168" font-family="IBM Plex Mono, monospace" font-size="7" fill="#dc2626">8</text>
-      <!-- Pin 4: GND (bottom of chip) -->
-      <text x="256" y="258" font-family="IBM Plex Mono, monospace" font-size="7" fill="#555">4</text>
+      <!-- Pin labels — outside the triangles for legibility -->
+      <!-- U1B (amber) -->
+      <text x="204" y="186" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#b45309">5</text>
+      <text x="204" y="204" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#b45309">6</text>
+      <text x="286" y="187" font-family="IBM Plex Mono, monospace" font-size="8" fill="#b45309">7</text>
+      <!-- U1A (green) -->
+      <text x="204" y="226" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#16a34a">3</text>
+      <text x="204" y="244" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#16a34a">2</text>
+      <text x="286" y="227" font-family="IBM Plex Mono, monospace" font-size="8" fill="#16a34a">1</text>
+      <!-- VCC / GND pin numbers -->
+      <text x="251" y="160" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" fill="#dc2626">8</text>
+      <text x="251" y="263" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" fill="#555">4</text>
 
       <!-- ── U1B op-amp (GPIO25 / amber, upper) ──────────────── -->
       <!-- Triangle: (213,178) (213,206) (283,192) -->
@@ -374,9 +367,9 @@
       <text x="287" y="185" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#b45309" font-weight="700">U1B</text>
 
-      <!-- U1B feedback line: output (283,192) → right to (297,192) → down to (297,212) → left to (207,212) → up to (207,206) → right to (213,206) -->
+      <!-- U1B feedback line: output → −in (unity gain) -->
       <polyline points="283,192 297,192 297,212 207,212 207,206 213,206"
-                fill="none" stroke="#b45309" stroke-width="1.2" stroke-dasharray="3,2"/>
+                fill="none" stroke="#b45309" stroke-width="1.8"/>
       <!-- Junction dot at (297,192) -->
       <circle cx="297" cy="192" r="3" fill="#b45309"/>
 
@@ -394,9 +387,9 @@
       <text x="287" y="225" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#16a34a" font-weight="700">U1A</text>
 
-      <!-- U1A feedback line: output (283,232) → right to (297,232) → down to (297,252) → left to (207,252) → up to (207,246) → right to (213,246) -->
+      <!-- U1A feedback line: output → −in (unity gain) -->
       <polyline points="283,232 297,232 297,252 207,252 207,246 213,246"
-                fill="none" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="3,2"/>
+                fill="none" stroke="#16a34a" stroke-width="1.8"/>
       <!-- Junction dot at (297,232) -->
       <circle cx="297" cy="232" r="3" fill="#16a34a"/>
 
@@ -410,26 +403,28 @@
       <text x="251" y="282" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#555" font-weight="700">GND</text>
 
-      <!-- ── Bypass capacitor C1 (100nF) ───────────────────────── -->
-      <!-- Junction on VCC stub at midpoint (251,155) -->
-      <circle cx="251" cy="155" r="3" fill="#dc2626"/>
-      <!-- Tap line: VCC stub → cap top -->
-      <line x1="251" y1="155" x2="308" y2="155" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="3,2"/>
-      <line x1="308" y1="155" x2="308" y2="172" stroke="#dc2626" stroke-width="1.2"/>
-      <!-- Capacitor plates -->
-      <line x1="300" y1="172" x2="316" y2="172" stroke="#333" stroke-width="2"/>
-      <line x1="300" y1="180" x2="316" y2="180" stroke="#333" stroke-width="2"/>
-      <!-- Stub to GND symbol -->
-      <line x1="308" y1="180" x2="308" y2="200" stroke="#555" stroke-width="1.2"/>
+      <!-- ── Bypass capacitor C1 (100nF) — standalone, bottom-right ── -->
+      <!-- +3.3V rail symbol at top -->
+      <line x1="601" y1="344" x2="601" y2="352" stroke="#dc2626" stroke-width="1.5"/>
+      <line x1="595" y1="344" x2="607" y2="344" stroke="#dc2626" stroke-width="2"/>
+      <text x="601" y="340" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#dc2626" font-weight="700">+3.3V</text>
+      <!-- Cap plates -->
+      <line x1="589" y1="352" x2="613" y2="352" stroke="#333" stroke-width="2.5"/>
+      <line x1="589" y1="361" x2="613" y2="361" stroke="#333" stroke-width="2.5"/>
+      <!-- Stub to GND -->
+      <line x1="601" y1="361" x2="601" y2="373" stroke="#555" stroke-width="1.5"/>
       <!-- GND symbol (three bars) -->
-      <line x1="302" y1="200" x2="314" y2="200" stroke="#555" stroke-width="1.5"/>
-      <line x1="304" y1="204" x2="312" y2="204" stroke="#555" stroke-width="1.5"/>
-      <line x1="306" y1="208" x2="310" y2="208" stroke="#555" stroke-width="1.5"/>
-      <!-- C1 labels -->
-      <text x="320" y="174" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#555" font-weight="700">C1</text>
-      <text x="320" y="183" font-family="IBM Plex Mono, monospace"
+      <line x1="594" y1="373" x2="608" y2="373" stroke="#555" stroke-width="1.8"/>
+      <line x1="597" y1="378" x2="605" y2="378" stroke="#555" stroke-width="1.8"/>
+      <line x1="599" y1="383" x2="603" y2="383" stroke="#555" stroke-width="1.8"/>
+      <!-- Labels -->
+      <text x="617" y="354" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#555" font-weight="700">C1</text>
+      <text x="617" y="364" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#888">100 nF</text>
+      <text x="601" y="397" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7" fill="#aaa">place near pin 8</text>
 
       <!-- Wire from ESP32 3V3 pin (left edge x=30, center y=185) to MCP6002 VCC -->
       <!-- (30,185) → (20,185) → (20,140) → (251,140) → (251,148) -->
