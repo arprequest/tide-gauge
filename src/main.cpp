@@ -35,8 +35,8 @@
 #define DAC_PIN       26     // GPIO26 (DAC2) → MCP6002 U1A → R3 (~3kΩ) → gauge (+)
 #define DAC_REF_PIN   25     // GPIO25 (DAC1) → MCP6002 U1B → R4 (~3kΩ) → gauge (−)
 #define DAC_CENTER    128    // mid-point — both DACs equal → no current
-#define DAC_POS       255    // full positive deflection (~0.5mA FSD with buffered output)
-#define DAC_NEG         0    // full negative deflection
+#define DAC_POS       250    // full positive deflection — needle at end stop
+#define DAC_NEG         5    // full negative deflection — needle at end stop
 #define TIDE_SCALE_FT 8.0f  // ±8 ft from MSL = full deflection
 #define NOAA_MSL_FT   8.35f // Port Townsend MSL above MLLW
 
@@ -102,8 +102,8 @@ uint8_t tideToDAC(float deltaMSL) {
 // At center (128) both output ~1.65V → zero differential.
 // Inverting GPIO25 doubles the swing and cancels DAC offset asymmetry.
 void setNeedle(uint8_t dacVal) {
-  dacWrite(DAC_PIN,     dacVal);
-  dacWrite(DAC_REF_PIN, 255 - dacVal);
+  dacWrite(DAC_PIN,     255 - dacVal);
+  dacWrite(DAC_REF_PIN, dacVal);
 }
 
 // Boot sweep: full left → full right → center
@@ -522,9 +522,9 @@ void handleTest() {
   <input type="range" min="0" max="255" value="128" id="slider" oninput="update(this.value)">
   <div class="label">DAC value (0 = full left &nbsp;|&nbsp; 128 = center &nbsp;|&nbsp; 255 = full right)</div>
   <div class="presets">
-    <button onclick="set(0)">Full Left<br><small>DAC 0</small></button>
+    <button onclick="set(5)">Full Left<br><small>DAC 5</small></button>
     <button onclick="set(128)">Center<br><small>DAC 128</small></button>
-    <button onclick="set(255)">Full Right<br><small>DAC 255</small></button>
+    <button onclick="set(250)">Full Right<br><small>DAC 250</small></button>
   </div>
 </div>
 <a href="/">&#8592; Back to tide page</a>
