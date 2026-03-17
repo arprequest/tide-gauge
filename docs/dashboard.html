@@ -225,7 +225,7 @@ body {
         <text x="74" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#1A7A5E" font-family="Libre Baskerville,serif" letter-spacing="2">HIGH</text>
         <text x="74" y="81" text-anchor="middle" font-size="22" font-weight="300" fill="#002838" font-family="JetBrains Mono,monospace">9.12</text>
         <text x="74" y="95" text-anchor="middle" font-size="10" fill="#6A8C98" font-family="JetBrains Mono,monospace">ft</text>
-        <text x="74" y="110" text-anchor="middle" font-size="11" fill="#1A7A5E" font-family="JetBrains Mono,monospace">14:24 UTC</text>
+        <text x="74" y="110" text-anchor="middle" font-size="11" fill="#1A7A5E" font-family="JetBrains Mono,monospace">14:24 PT</text>
       </svg>
       <div class="g-label">Next Event</div>
     </div>
@@ -473,9 +473,11 @@ fill="#B87820" stroke="#fff" stroke-width="2" opacity=".92"/>`;
     for (let t = t0; t <= t1; t += 6*3600000) {
       const x = +tx(t);
       if (x > PL+20 && x < W-PR-20) {
-        const d = new Date(t), h = d.getHours();
+        const d = new Date(t);
+        const pt = new Date(d.toLocaleString('en-US', {timeZone:'America/Los_Angeles'}));
+        const h = pt.getHours();
         const lbl = h===0
-          ? `${d.getMonth()+1}/${d.getDate()}`
+          ? `${pt.getMonth()+1}/${pt.getDate()}`
           : h.toString().padStart(2,'0')+':00';
         s += `<text x="${x}" y="${H-7}" text-anchor="middle"
 font-size="9" font-family="JetBrains Mono,monospace" font-weight="300" fill="#9ABAC4">${lbl}</text>`;

@@ -188,7 +188,7 @@ void fetchTide() {
 
   String url2 = String("https://") + NOAA_HOST +
     "/api/prod/datagetter?station=" + NOAA_STATION +
-    "&product=predictions&datum=MLLW&time_zone=gmt&units=english"
+    "&product=predictions&datum=MLLW&time_zone=lst_ldt&units=english"
     "&format=json&interval=hilo"
     "&begin_date=" + begin_date + "&end_date=" + end_date;
 
@@ -231,7 +231,7 @@ void fetchTide() {
           tideState.nextEventFt   = String(p["v"].as<const char*>()).toFloat();
           // Format time nicely
           char buf[10];
-          snprintf(buf, sizeof(buf), "%02d:%02d UTC", ptm.tm_hour, ptm.tm_min);
+          snprintf(buf, sizeof(buf), "%02d:%02d PT", ptm.tm_hour, ptm.tm_min);
           tideState.nextEventTime = String(buf);
           break;
         }
