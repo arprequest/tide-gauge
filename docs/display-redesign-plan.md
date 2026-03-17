@@ -108,5 +108,63 @@ continues fetching tide data, driving the gauge, and serving the web page.
 
 - [ ] Enclosure material — wood, painted MDF, or metal?
 - [ ] Landscape or portrait orientation for the enclosure?
-- [ ] Should the Spyglass name appear on the display, or just the logo mark?
-- [ ] Any other data to show — barometric pressure, moon phase, tide station map?
+
+---
+
+## Decided
+
+- **Logo:** Spyglass Beach House logo mark + name appear in the header
+- **Extra data:** Add barometric pressure and moon phase
+
+### Barometric pressure
+NOAA station 9444900 reports air pressure. Add `product=air_pressure` fetch
+to `fetchMeteo()` alongside the existing air temp and wind calls. Units: mb (millibars).
+
+### Moon phase
+Calculated in browser-side JavaScript — no API or firmware change needed.
+Standard lunar cycle algorithm (synodic month = 29.53059 days from a known
+new moon epoch). Display as phase name + emoji:
+🌑 New · 🌒 Waxing Crescent · 🌓 First Quarter · 🌔 Waxing Gibbous ·
+🌕 Full · 🌖 Waning Gibbous · 🌗 Last Quarter · 🌘 Waning Crescent
+
+Moon phase is directly relevant — spring tides (higher highs, lower lows)
+occur at new and full moon; neap tides at quarter moons.
+
+### Updated conditions column
+
+| Field | Source |
+|-------|--------|
+| Air temperature | NOAA station 9444900 (ESP32 fetch) |
+| Wind speed + gust | NOAA station 9444900 (ESP32 fetch) |
+| Wind direction | NOAA station 9444900 (ESP32 fetch) |
+| Barometric pressure | NOAA station 9444900 (ESP32 fetch) |
+| Moon phase | Calculated in browser JS |
+
+### Updated layout (right column expanded)
+
+```
+┌─────────────────────────────────────────────────────────────────┐  1024px
+│  [Logo]  SPYGLASS BEACH HOUSE         Port Townsend, WA  ~70px  │
+├───────────────────┬─────────────────────────┬───────────────────┤
+│                   │                         │                   │
+│  CURRENT TIDE     │   48-HR TIDE CHART      │   🌡  temp        │
+│                   │                         │   💨  wind/gust   │
+│  big number       │                         │   🧭  direction   │
+│  delta from MSL   │                         │   📊  pressure    │
+│  tide bar         │                         │   🌕  moon phase  │
+│                   │                         │                   │
+│  NEXT HI/LO       │                         │                   │
+│  time + height    │                         │                   │
+│                   │                         │                   │
+└───────────────────┴─────────────────────────┴───────────────────┘
+```
+
+### Implementation tasks
+
+- [ ] Add `air_pressure` to `fetchMeteo()` in `src/main.cpp`
+- [ ] Add `pressureMb` field to `MeteoState` struct
+- [ ] Encode logo PNG as base64 and embed in HTML
+- [ ] Build new `handleRoot()` HTML for 1024×600 fixed layout
+- [ ] Add moon phase JS calculation to page
+- [ ] Set fixed viewport meta tag (`width=1024`)
+- [ ] Test in browser at 1024×600 window size
