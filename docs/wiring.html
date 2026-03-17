@@ -273,17 +273,8 @@
   <div class="diagram-container">
     <h2 class="section-title">Schematic</h2>
 
-    <svg class="wiring-svg" viewBox="0 0 700 530" xmlns="http://www.w3.org/2000/svg">
+    <svg class="wiring-svg" viewBox="0 0 700 490" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="arrow" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
-          <polygon points="0 0, 8 3, 0 6" fill="#555"/>
-        </marker>
-        <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
-          <polygon points="0 0, 8 3, 0 6" fill="#2563eb"/>
-        </marker>
-        <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
-          <polygon points="0 0, 8 3, 0 6" fill="#dc2626"/>
-        </marker>
         <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
           <polygon points="0 0, 8 3, 0 6" fill="#16a34a"/>
         </marker>
@@ -293,249 +284,214 @@
       </defs>
 
       <!-- Background -->
-      <rect width="700" height="530" fill="#fafafa" rx="8"/>
+      <rect width="700" height="490" fill="#fafafa" rx="8"/>
 
-      <!-- ── Title / caption ────────────────────────────────────── -->
-      <text x="350" y="28" text-anchor="middle" font-family="Archivo Black, sans-serif"
+      <!-- ── Title ──────────────────────────────────────────────── -->
+      <text x="350" y="22" text-anchor="middle" font-family="Archivo Black, sans-serif"
             font-size="13" fill="#2563eb" letter-spacing="1">TIDE GAUGE — OP-AMP BUFFERED PUSH-PULL DRIVE</text>
-      <text x="350" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9.5" fill="#888">MCP6002 dual op-amp buffers · eliminates DAC output impedance · full ±0.5 mA FSD</text>
-      <text x="350" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9.5" fill="#888">DAC 255 = full right · DAC 0 = full left · DAC 128 = center</text>
+      <text x="350" y="38" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#888">GPIO26 / GPIO25 → MCP6002 unity-gain buffers → series resistors → center-zero galvanometer</text>
 
-      <!-- ── ESP32 board ──────────────────────────────────────────── -->
-      <rect x="30" y="110" width="155" height="280" rx="6"
-            fill="#f0f4ff" stroke="#2563eb" stroke-width="2"/>
-      <text x="107" y="103" text-anchor="middle"
-            font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700"
-            fill="#2563eb" letter-spacing="1">ESP32-WROOM-32</text>
+      <!-- ── Power rails ────────────────────────────────────────── -->
+      <line x1="42" y1="57" x2="638" y2="57" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="7,3"/>
+      <text x="38" y="61" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#dc2626" font-weight="700">+3.3V</text>
+      <line x1="42" y1="444" x2="638" y2="444" stroke="#555" stroke-width="1.5" stroke-dasharray="7,3"/>
+      <text x="38" y="448" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#555" font-weight="700">GND</text>
 
-      <!-- Left-side pins (GND, 3.3V) -->
-      <rect x="30" y="153" width="30" height="16" rx="3" fill="#1a1a1a"/>
-      <text x="45" y="165" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#fff">GND</text>
+      <!-- ── ESP32 (small) ─────────────────────────────────────── -->
+      <rect x="22" y="158" width="68" height="188" rx="5"
+            fill="#f0f4ff" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="56" y="151" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9.5" font-weight="700" fill="#2563eb" letter-spacing="0.5">ESP32</text>
 
-      <rect x="30" y="177" width="30" height="16" rx="3" fill="#dc2626"/>
-      <text x="45" y="189" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#fff">3V3</text>
+      <!-- 3V3 pin (left), wire up to VCC rail -->
+      <rect x="8" y="171" width="26" height="14" rx="2" fill="#dc2626"/>
+      <text x="21" y="181" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7.5" fill="#fff">3V3</text>
+      <line x1="8" y1="171" x2="8" y2="57" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <circle cx="8" cy="57" r="2.5" fill="#dc2626"/>
 
-      <!-- Right-side pins -->
-      <!-- GPIO25 (DAC1) -->
-      <rect x="155" y="183" width="30" height="16" rx="3" fill="#b45309"/>
-      <text x="170" y="195" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#fff">IO25</text>
-      <text x="152" y="195" text-anchor="end" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#555">DAC1</text>
+      <!-- GND pin (left), wire down to GND rail -->
+      <rect x="8" y="194" width="26" height="14" rx="2" fill="#1a1a1a"/>
+      <text x="21" y="204" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7.5" fill="#fff">GND</text>
+      <line x1="8" y1="208" x2="8" y2="444" stroke="#555" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <circle cx="8" cy="444" r="2.5" fill="#555"/>
 
-      <!-- GPIO26 (DAC2) -->
-      <rect x="155" y="211" width="30" height="16" rx="3" fill="#16a34a"/>
-      <text x="170" y="223" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#fff">IO26</text>
-      <text x="152" y="223" text-anchor="end" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#555">DAC2</text>
+      <!-- IO26 pin (green, right) — center y=192, aligns with U1A +in -->
+      <rect x="78" y="185" width="28" height="14" rx="2" fill="#16a34a"/>
+      <text x="92" y="195" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7.5" fill="#fff">IO26</text>
+      <text x="75" y="195" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="7" fill="#666">DAC2</text>
 
-      <!-- ── MCP6002 chip outline ──────────────────────────────── -->
-      <rect x="207" y="162" width="88" height="98" rx="4"
-            fill="#f5f5ff" stroke="#7c3aed" stroke-width="2"/>
-      <text x="251" y="175" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" font-weight="700" fill="#7c3aed">MCP6002</text>
+      <!-- IO25 pin (amber, right) — center y=292, aligns with U1B +in -->
+      <rect x="78" y="285" width="28" height="14" rx="2" fill="#b45309"/>
+      <text x="92" y="295" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7.5" fill="#fff">IO25</text>
+      <text x="75" y="295" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="7" fill="#666">DAC1</text>
 
-      <!-- Pin labels — outside the triangles for legibility -->
-      <!-- U1B (amber) -->
-      <text x="204" y="186" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#b45309">5</text>
-      <text x="204" y="204" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#b45309">6</text>
-      <text x="286" y="187" font-family="IBM Plex Mono, monospace" font-size="8" fill="#b45309">7</text>
-      <!-- U1A (green) -->
-      <text x="204" y="226" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#16a34a">3</text>
-      <text x="204" y="244" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8" fill="#16a34a">2</text>
-      <text x="286" y="227" font-family="IBM Plex Mono, monospace" font-size="8" fill="#16a34a">1</text>
-      <!-- VCC / GND pin numbers -->
-      <text x="251" y="160" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" fill="#dc2626">8</text>
-      <text x="251" y="263" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" fill="#555">4</text>
+      <!-- ── MCP6002 chip box ────────────────────────────────────── -->
+      <rect x="140" y="155" width="152" height="192" rx="4"
+            fill="#f5f5ff" stroke="#7c3aed" stroke-width="1.8"/>
+      <text x="216" y="171" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9.5" font-weight="700" fill="#7c3aed" letter-spacing="0.5">MCP6002</text>
 
-      <!-- ── U1B op-amp (GPIO25 / amber, upper) ──────────────── -->
-      <!-- Triangle: (213,178) (213,206) (283,192) -->
-      <polygon points="213,178 213,206 283,192"
-               fill="#fff9e6" stroke="#b45309" stroke-width="1.5"/>
-      <!-- (+) input label — upper-left of triangle -->
-      <text x="218" y="188" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#b45309">+</text>
-      <!-- (−) input label — lower-left of triangle -->
-      <text x="218" y="202" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#b45309">−</text>
-      <!-- U1B label -->
-      <text x="287" y="185" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#b45309" font-weight="700">U1B</text>
+      <!-- U1A triangle (green) — left edge y=175–225, tip at (284,200) -->
+      <!-- +in at y≈192 (1/3 of 175–225), −in at y≈208 (2/3) -->
+      <polygon points="150,175 150,225 284,200"
+               fill="#f0fff4" stroke="#16a34a" stroke-width="1.8"/>
+      <text x="159" y="196" font-family="IBM Plex Mono, monospace"
+            font-size="10" fill="#16a34a" font-weight="700">+</text>
+      <text x="159" y="212" font-family="IBM Plex Mono, monospace"
+            font-size="10" fill="#16a34a" font-weight="700">−</text>
 
-      <!-- U1B feedback line: output → −in (unity gain) -->
-      <polyline points="283,192 297,192 297,212 207,212 207,206 213,206"
-                fill="none" stroke="#b45309" stroke-width="1.8"/>
-      <!-- Junction dot at (297,192) -->
-      <circle cx="297" cy="192" r="3" fill="#b45309"/>
+      <!-- U1A pin numbers (outside signal wires) -->
+      <text x="143" y="190" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#16a34a" font-weight="700">3</text>
+      <text x="143" y="219" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#16a34a" font-weight="700">2</text>
+      <text x="289" y="196" text-anchor="start" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#16a34a" font-weight="700">1</text>
+      <text x="289" y="207" text-anchor="start" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#16a34a">U1A</text>
 
-      <!-- ── U1A op-amp (GPIO26 / green, lower) ──────────────── -->
-      <!-- Triangle: (213,218) (213,246) (283,232) -->
-      <polygon points="213,218 213,246 283,232"
-               fill="#f0fff4" stroke="#16a34a" stroke-width="1.5"/>
-      <!-- (+) input label — upper-left of triangle -->
-      <text x="218" y="228" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#16a34a">+</text>
-      <!-- (−) input label — lower-left of triangle -->
-      <text x="218" y="242" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#16a34a">−</text>
-      <!-- U1A label -->
-      <text x="287" y="225" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#16a34a" font-weight="700">U1A</text>
+      <!-- U1B triangle (amber) — left edge y=275–325, tip at (284,300) -->
+      <!-- +in at y≈292, −in at y≈308 -->
+      <polygon points="150,275 150,325 284,300"
+               fill="#fff9e6" stroke="#b45309" stroke-width="1.8"/>
+      <text x="159" y="296" font-family="IBM Plex Mono, monospace"
+            font-size="10" fill="#b45309" font-weight="700">+</text>
+      <text x="159" y="312" font-family="IBM Plex Mono, monospace"
+            font-size="10" fill="#b45309" font-weight="700">−</text>
 
-      <!-- U1A feedback line: output → −in (unity gain) -->
-      <polyline points="283,232 297,232 297,252 207,252 207,246 213,246"
-                fill="none" stroke="#16a34a" stroke-width="1.8"/>
-      <!-- Junction dot at (297,232) -->
-      <circle cx="297" cy="232" r="3" fill="#16a34a"/>
+      <!-- U1B pin numbers -->
+      <text x="143" y="290" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#b45309" font-weight="700">5</text>
+      <text x="143" y="319" text-anchor="end" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#b45309" font-weight="700">6</text>
+      <text x="289" y="296" text-anchor="start" font-family="IBM Plex Mono, monospace"
+            font-size="9" fill="#b45309" font-weight="700">7</text>
+      <text x="289" y="307" text-anchor="start" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#b45309">U1B</text>
 
-      <!-- ── VCC / GND connections to MCP6002 ──────────────────── -->
-      <!-- VCC stub: (251,162) up to (251,148) -->
-      <line x1="251" y1="162" x2="251" y2="148" stroke="#dc2626" stroke-width="1.5"/>
-      <text x="251" y="144" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#dc2626" font-weight="700">+3.3V</text>
-      <!-- GND stub: (251,260) down to (251,272) -->
-      <line x1="251" y1="260" x2="251" y2="272" stroke="#555" stroke-width="1.5"/>
-      <text x="251" y="282" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#555" font-weight="700">GND</text>
-
-      <!-- ── Bypass capacitor C1 (100nF) — standalone, bottom-right ── -->
-      <!-- +3.3V rail symbol at top -->
-      <line x1="601" y1="344" x2="601" y2="352" stroke="#dc2626" stroke-width="1.5"/>
-      <line x1="595" y1="344" x2="607" y2="344" stroke="#dc2626" stroke-width="2"/>
-      <text x="601" y="340" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#dc2626" font-weight="700">+3.3V</text>
-      <!-- Cap plates -->
-      <line x1="589" y1="352" x2="613" y2="352" stroke="#333" stroke-width="2.5"/>
-      <line x1="589" y1="361" x2="613" y2="361" stroke="#333" stroke-width="2.5"/>
-      <!-- Stub to GND -->
-      <line x1="601" y1="361" x2="601" y2="373" stroke="#555" stroke-width="1.5"/>
-      <!-- GND symbol (three bars) -->
-      <line x1="594" y1="373" x2="608" y2="373" stroke="#555" stroke-width="1.8"/>
-      <line x1="597" y1="378" x2="605" y2="378" stroke="#555" stroke-width="1.8"/>
-      <line x1="599" y1="383" x2="603" y2="383" stroke="#555" stroke-width="1.8"/>
-      <!-- Labels -->
-      <text x="617" y="354" font-family="IBM Plex Mono, monospace"
+      <!-- ── VCC stub (pin 8) with C1 inline ───────────────────── -->
+      <!-- Wire from VCC rail (y=57) down to cap top (y=88) -->
+      <line x1="216" y1="57" x2="216" y2="88" stroke="#dc2626" stroke-width="1.5"/>
+      <circle cx="216" cy="57" r="2.5" fill="#dc2626"/>
+      <!-- Capacitor plates -->
+      <line x1="204" y1="91" x2="228" y2="91" stroke="#333" stroke-width="2.5"/>
+      <line x1="204" y1="99" x2="228" y2="99" stroke="#333" stroke-width="2.5"/>
+      <!-- Wire from cap bottom to chip top (y=155) -->
+      <line x1="216" y1="99" x2="216" y2="155" stroke="#dc2626" stroke-width="1.5"/>
+      <!-- C1 label -->
+      <text x="232" y="93" font-family="IBM Plex Mono, monospace"
             font-size="9" fill="#555" font-weight="700">C1</text>
-      <text x="617" y="364" font-family="IBM Plex Mono, monospace"
+      <text x="232" y="103" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#888">100 nF</text>
-      <text x="601" y="397" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="7" fill="#aaa">place near pin 8</text>
+      <!-- Pin 8 marker -->
+      <text x="221" y="163" text-anchor="start" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#dc2626">8</text>
 
-      <!-- Wire from ESP32 3V3 pin (left edge x=30, center y=185) to MCP6002 VCC -->
-      <!-- (30,185) → (20,185) → (20,140) → (251,140) → (251,148) -->
-      <polyline points="30,185 20,185 20,140 251,140 251,148"
-                fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <!-- ── GND stub (pin 4) ───────────────────────────────────── -->
+      <line x1="216" y1="347" x2="216" y2="444" stroke="#555" stroke-width="1.5"/>
+      <circle cx="216" cy="444" r="2.5" fill="#555"/>
+      <text x="221" y="344" text-anchor="start" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#555">4</text>
 
-      <!-- Wire from ESP32 GND pin (left edge x=30, center y=161) to MCP6002 GND -->
-      <!-- (30,161) → (20,161) → (20,280) → (251,280) → (251,272) -->
-      <polyline points="30,161 20,161 20,280 251,280 251,272"
-                fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <!-- ── IO26 → U1A +in (green, y=192) ─────────────────────── -->
+      <line x1="106" y1="192" x2="150" y2="192"
+            stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
 
-      <!-- ── GPIO25 → U1B (+) input ─────────────────────────── -->
-      <!-- IO25 right edge at (185,191); U1B (+) at left edge y≈186 (upper of 178-206) -->
-      <line x1="185" y1="191" x2="213" y2="184"
+      <!-- ── IO25 → U1B +in (amber, y=292) ─────────────────────── -->
+      <line x1="106" y1="292" x2="150" y2="292"
             stroke="#b45309" stroke-width="2" marker-end="url(#arrow-orange)"/>
 
-      <!-- ── GPIO26 → U1A (+) input ─────────────────────────── -->
-      <!-- IO26 right edge at (185,219); U1A (+) at left edge y≈225 (upper of 218-246) -->
-      <line x1="185" y1="219" x2="213" y2="225"
-            stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
+      <!-- ── U1A feedback: tip → −in ────────────────────────────── -->
+      <circle cx="284" cy="200" r="3.5" fill="#16a34a"/>
+      <polyline points="284,200 305,200 305,234 147,234 147,208 150,208"
+                fill="none" stroke="#16a34a" stroke-width="1.8"/>
 
-      <!-- ── R4 (amber, 3kΩ) — GPIO25 / U1B path ─────────────── -->
-      <rect x="315" y="184" width="52" height="16" rx="3"
-            fill="#fff" stroke="#b45309" stroke-width="1.5"/>
-      <text x="341" y="195" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9.5" fill="#333">3 k&#937;</text>
-      <text x="341" y="180" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#b45309" font-weight="700">R4</text>
+      <!-- ── U1B feedback: tip → −in ────────────────────────────── -->
+      <circle cx="284" cy="300" r="3.5" fill="#b45309"/>
+      <polyline points="284,300 305,300 305,334 147,334 147,308 150,308"
+                fill="none" stroke="#b45309" stroke-width="1.8"/>
 
-      <!-- Wire from U1B junction (297,192) → R4 input (315,192) -->
-      <line x1="297" y1="192" x2="315" y2="192"
-            stroke="#b45309" stroke-width="2"/>
-      <!-- Wire from R4 output (367,192) → right to (440,192) → down to (440,263) → right to gauge− at (455,263) -->
-      <polyline points="367,192 440,192 440,263 455,263"
-                fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#arrow-orange)"/>
-
-      <!-- ── R3 (green, 3kΩ) — GPIO26 / U1A path ─────────────── -->
-      <rect x="315" y="224" width="52" height="16" rx="3"
+      <!-- ── U1A tip → R3 → gauge+ (all at y=200) ─────────────── -->
+      <line x1="284" y1="200" x2="314" y2="200" stroke="#16a34a" stroke-width="2"/>
+      <rect x="314" y="191" width="55" height="18" rx="3"
             fill="#fff" stroke="#16a34a" stroke-width="1.5"/>
-      <text x="341" y="235" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+      <text x="341" y="203" text-anchor="middle" font-family="IBM Plex Mono, monospace"
             font-size="9.5" fill="#333">3 k&#937;</text>
-      <text x="341" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#16a34a" font-weight="700">R3</text>
-
-      <!-- Wire from U1A junction (297,232) → R3 input (315,232) -->
-      <line x1="297" y1="232" x2="315" y2="232"
-            stroke="#16a34a" stroke-width="2"/>
-      <!-- Wire from R3 output (367,232) → gauge+ at (455,232) -->
-      <line x1="367" y1="232" x2="455" y2="232"
+      <text x="341" y="188" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="8.5" fill="#16a34a" font-weight="700">R3</text>
+      <line x1="369" y1="200" x2="414" y2="200"
             stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+      <!-- ── U1B tip → R4 → gauge− (all at y=300) ─────────────── -->
+      <line x1="284" y1="300" x2="314" y2="300" stroke="#b45309" stroke-width="2"/>
+      <rect x="314" y="291" width="55" height="18" rx="3"
+            fill="#fff" stroke="#b45309" stroke-width="1.5"/>
+      <text x="341" y="303" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="9.5" fill="#333">3 k&#937;</text>
+      <text x="341" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="8.5" fill="#b45309" font-weight="700">R4</text>
+      <line x1="369" y1="300" x2="414" y2="300"
+            stroke="#b45309" stroke-width="2" marker-end="url(#arrow-orange)"/>
 
       <!-- ── Galvanometer ──────────────────────────────────────── -->
-      <!-- Body -->
-      <rect x="455" y="200" width="120" height="120" rx="8"
+      <rect x="414" y="182" width="178" height="136" rx="8"
             fill="#fffdf0" stroke="#b45309" stroke-width="2"/>
-
-      <!-- Dial face -->
-      <circle cx="515" cy="260" r="46" fill="#fff9e6" stroke="#b45309" stroke-width="1.5"/>
-
-      <!-- Scale arc marks -->
-      <g stroke="#555" stroke-width="1">
-        <!-- Center mark -->
-        <line x1="515" y1="217" x2="515" y2="227"/>
-        <!-- Left marks -->
-        <line x1="484" y1="225" x2="489" y2="233"/>
-        <line x1="467" y1="245" x2="475" y2="249"/>
-        <!-- Right marks -->
-        <line x1="546" y1="225" x2="541" y2="233"/>
-        <line x1="563" y1="245" x2="555" y2="249"/>
-      </g>
-
-      <!-- "YARDS PER SECOND" label on gauge -->
-      <text x="515" y="253" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="7" fill="#888" letter-spacing="0.5">YARDS PER SECOND</text>
-
-      <!-- Center needle (pointing up = tide at MSL) -->
-      <line x1="515" y1="260" x2="515" y2="225"
-            stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="515" cy="260" r="4" fill="#555"/>
-
-      <!-- +/- labels -->
-      <text x="468" y="269" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#888">−</text>
-      <text x="562" y="269" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="9" fill="#888">+</text>
-      <text x="515" y="297" text-anchor="middle" font-family="IBM Plex Mono, monospace"
-            font-size="8" fill="#b45309">± 0.5 mA</text>
-
-      <!-- Gauge terminal labels — gauge+ at left side y=232, gauge− at left side y=263 -->
-      <text x="452" y="236" text-anchor="end" font-family="IBM Plex Mono, monospace"
+      <!-- Terminal entry dots -->
+      <circle cx="414" cy="200" r="3.5" fill="#16a34a"/>
+      <circle cx="414" cy="300" r="3.5" fill="#b45309"/>
+      <text x="410" y="196" text-anchor="end" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#16a34a" font-weight="700">gauge+</text>
-      <text x="452" y="267" text-anchor="end" font-family="IBM Plex Mono, monospace"
+      <text x="410" y="305" text-anchor="end" font-family="IBM Plex Mono, monospace"
             font-size="8" fill="#b45309" font-weight="700">gauge−</text>
 
+      <!-- Dial face -->
+      <circle cx="503" cy="250" r="54" fill="#fff9e6" stroke="#b45309" stroke-width="1.5"/>
+      <!-- Tick marks -->
+      <g stroke="#555" stroke-width="1.2">
+        <line x1="503" y1="197" x2="503" y2="209"/>
+        <line x1="466" y1="207" x2="472" y2="218"/>
+        <line x1="449" y1="229" x2="458" y2="236"/>
+        <line x1="540" y1="207" x2="534" y2="218"/>
+        <line x1="557" y1="229" x2="548" y2="236"/>
+      </g>
+      <text x="503" y="222" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7.5" fill="#555">0</text>
+      <text x="462" y="226" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7" fill="#555">50</text>
+      <text x="544" y="226" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7" fill="#555">50</text>
+      <text x="503" y="244" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="6.5" fill="#888" letter-spacing="0.5">YARDS PER SECOND</text>
+      <!-- Needle -->
+      <line x1="503" y1="250" x2="503" y2="208"
+            stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="503" cy="250" r="4" fill="#555"/>
+      <!-- +/− labels -->
+      <text x="455" y="259" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="12" fill="#888">−</text>
+      <text x="551" y="259" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="12" fill="#888">+</text>
+      <text x="503" y="295" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="8" fill="#b45309">± 0.5 mA FSD</text>
+      <text x="503" y="311" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+            font-size="7.5" fill="#888">Weston 643</text>
+
       <!-- ── Legend ─────────────────────────────────────────────── -->
-      <rect x="40" y="445" width="620" height="62" rx="6"
+      <rect x="42" y="460" width="616" height="22" rx="4"
             fill="#fff" stroke="#d4d4d4" stroke-width="1"/>
-      <text x="60" y="463" font-family="IBM Plex Mono, monospace" font-size="10"
-            font-weight="700" fill="#555" letter-spacing="1">LEGEND</text>
-
-      <!-- Green legend -->
-      <line x1="60" y1="477" x2="100" y2="477" stroke="#16a34a" stroke-width="2"/>
-      <text x="108" y="481" font-family="IBM Plex Mono, monospace" font-size="9" fill="#555">GPIO26 &#x2192; U1A buffer &#x2192; R3 &#x2192; gauge+ (tide signal)</text>
-
-      <!-- Amber legend -->
-      <line x1="60" y1="494" x2="100" y2="494" stroke="#b45309" stroke-width="2"/>
-      <text x="108" y="498" font-family="IBM Plex Mono, monospace" font-size="9" fill="#555">GPIO25 &#x2192; U1B buffer &#x2192; R4 &#x2192; gauge&#x2212; (inverted reference)</text>
-
-      <!-- Purple legend (MCP6002 box) -->
-      <rect x="400" y="469" width="14" height="14" rx="2" fill="#f5f5ff" stroke="#7c3aed" stroke-width="1.5"/>
-      <text x="420" y="481" font-family="IBM Plex Mono, monospace" font-size="9" fill="#555">MCP6002 unity-gain buffers (output &#x2192; &#x2212;input)</text>
+      <line x1="56" y1="471" x2="86" y2="471" stroke="#16a34a" stroke-width="2"/>
+      <text x="92" y="475" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#555">GPIO26 &#x2192; U1A &#x2192; R3 &#x2192; gauge+  (tide signal)</text>
+      <line x1="340" y1="471" x2="370" y2="471" stroke="#b45309" stroke-width="2"/>
+      <text x="376" y="475" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#555">GPIO25 &#x2192; U1B &#x2192; R4 &#x2192; gauge&#x2212;  (inverted reference)</text>
 
     </svg>
   </div>
