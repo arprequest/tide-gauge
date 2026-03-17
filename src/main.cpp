@@ -487,7 +487,9 @@ void handleRoot() {
 (async()=>{
 const el=document.getElementById('tc');
 try{
-const r=await fetch('https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9444900&product=predictions&datum=MLLW&time_zone=gmt&interval=h&units=english&format=json&range=48');
+function nd(ms){const d=new Date(ms);return d.getUTCFullYear().toString()+(d.getUTCMonth()+1).toString().padStart(2,'0')+d.getUTCDate().toString().padStart(2,'0')+' '+d.getUTCHours().toString().padStart(2,'0')+':00';}
+const nm=Date.now();
+const r=await fetch('https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9444900&product=predictions&datum=MLLW&time_zone=gmt&interval=h&units=english&format=json&begin_date='+encodeURIComponent(nd(nm-12*3600000))+'&end_date='+encodeURIComponent(nd(nm+36*3600000)));
 if(!r.ok)throw 0;
 const{predictions:P}=await r.json();
 const vs=P.map(p=>+p.v),lo=Math.min(...vs)-.3,hi=Math.max(...vs)+.3;
@@ -517,7 +519,8 @@ for(let t=t0;t<=t1;t+=6*3600000){
   const x=+tx(t);
   if(x>PL+5&&x<W-5){
     const d=new Date(t);
-    const lbl=d.getHours()===0?`${d.getMonth()+1}/${d.getDate()}`:d.getHours().toString().padStart(2,'0')+':00';
+    const pt=new Date(d.toLocaleString('en-US',{timeZone:'America/Los_Angeles'}));
+    const lbl=pt.getHours()===0?`${pt.getMonth()+1}/${pt.getDate()}`:pt.getHours().toString().padStart(2,'0')+':00';
     s+=`<text x="${x}" y="${H-5}" text-anchor="middle" font-size="8" fill="#8b949e">${lbl}</text>`;
   }
 }

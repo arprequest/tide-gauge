@@ -390,10 +390,21 @@ const MF = 8.35, CF = 8.42;
 (async () => {
   const el = document.getElementById('tc');
   try {
+    // Fetch 12h of past + 36h of future so "now" appears ~1/4 from left
+    function noaaDateStr(ms) {
+      const d = new Date(ms);
+      return d.getUTCFullYear().toString() +
+        (d.getUTCMonth()+1).toString().padStart(2,'0') +
+        d.getUTCDate().toString().padStart(2,'0') + ' ' +
+        d.getUTCHours().toString().padStart(2,'0') + ':00';
+    }
+    const nowMs = Date.now();
     const r = await fetch(
       'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter' +
       '?station=9444900&product=predictions&datum=MLLW' +
-      '&time_zone=gmt&interval=h&units=english&format=json&range=48'
+      '&time_zone=gmt&interval=h&units=english&format=json' +
+      '&begin_date=' + encodeURIComponent(noaaDateStr(nowMs - 12*3600000)) +
+      '&end_date='   + encodeURIComponent(noaaDateStr(nowMs + 36*3600000))
     );
     if (!r.ok) throw 0;
     const { predictions: P } = await r.json();
