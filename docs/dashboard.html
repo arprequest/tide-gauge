@@ -6,20 +6,21 @@
 <meta http-equiv="refresh" content="30">
 <title>Spyglass Beach House — Tide Station</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=IBM+Plex+Mono:wght@300;400;500&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:     #06101C;
-  --card:   #0A1826;
-  --border: #132030;
-  --glow:   #00BFA0;
-  --blue:   #4A96C8;
-  --amber:  #C49030;
-  --text:   #B8CDD8;
-  --dim:    #3A5468;
-  --hi:     #28B896;
-  --lo:     #4A7898;
-  --hdr:    58px;
+  --bg:     #EEF5F6;
+  --white:  #FFFFFF;
+  --navy:   #003C50;
+  --teal:   #288CA0;
+  --lteal:  #A8D0D8;
+  --gold:   #B87820;
+  --hi:     #1A7A5E;
+  --lo:     #7A9AA8;
+  --text:   #002838;
+  --dim:    #6A8C98;
+  --border: #C8DDE2;
+  --hdr:    60px;
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -28,402 +29,317 @@ html, body {
   width:1024px; height:600px; overflow:hidden;
   background:var(--bg);
   color:var(--text);
-  font-family:'Raleway',sans-serif;
+  font-family:'Jost', sans-serif;
 }
 
-/* Nautical chart dot grid */
+/* Subtle water texture in bg */
 body {
-  background-image:radial-gradient(circle, rgba(74,150,200,.065) 1px, transparent 1px);
-  background-size:22px 22px;
-  background-position:11px 11px;
-}
-
-/* Radial vignette */
-body::before {
-  content:'';
-  position:fixed; inset:0;
-  background:radial-gradient(ellipse 90% 80% at 50% 50%, transparent 25%, rgba(3,8,15,.7) 100%);
-  pointer-events:none; z-index:1;
-}
-
-/* Scanlines */
-body::after {
-  content:'';
-  position:fixed; inset:0;
-  background:repeating-linear-gradient(
-    0deg, transparent, transparent 3px,
-    rgba(0,0,0,.038) 3px, rgba(0,0,0,.038) 4px
-  );
-  pointer-events:none; z-index:999;
+  background-image:
+    linear-gradient(135deg, rgba(40,140,160,.04) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(40,140,160,.04) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(40,140,160,.04) 25%, transparent 25%),
+    linear-gradient(45deg,  rgba(40,140,160,.04) 25%, transparent 25%);
+  background-size:20px 20px;
+  background-position:0 0, 10px 0, 10px -10px, 0px 10px;
 }
 
 /* ══ HEADER ══════════════════════════════════════════ */
 .hdr {
   height:var(--hdr);
-  background:linear-gradient(180deg, #0D1E2E 0%, #071524 100%);
-  border-bottom:1px solid var(--border);
+  background:var(--navy);
   display:flex; align-items:center;
-  padding:0 20px; gap:14px;
-  position:relative; z-index:10;
+  padding:0 22px; gap:14px;
+  position:relative;
 }
-
-/* Gradient shimmer rule */
 .hdr::after {
   content:'';
-  position:absolute; bottom:0; left:0; right:0; height:1px;
+  position:absolute; bottom:0; left:0; right:0; height:2px;
   background:linear-gradient(90deg,
     transparent 0%,
-    rgba(0,191,160,.3) 20%,
-    rgba(196,144,48,.65) 50%,
-    rgba(0,191,160,.3) 80%,
+    var(--teal) 25%,
+    var(--lteal) 50%,
+    var(--teal) 75%,
     transparent 100%
   );
 }
-
-.hdr-pipe {
-  width:1px; height:26px;
-  background:linear-gradient(180deg, transparent, var(--dim), transparent);
+.hdr-logo {
+  height:40px; width:40px; object-fit:contain;
+  border-radius:3px; flex-shrink:0;
+  background:#fff; padding:2px;
+}
+.hdr-sep {
+  width:1px; height:28px;
+  background:linear-gradient(180deg, transparent, rgba(255,255,255,.28), transparent);
   flex-shrink:0;
 }
-
 .hdr-name {
-  font-family:'Cinzel',serif;
-  font-size:.94rem; font-weight:600;
-  letter-spacing:.3em; text-transform:uppercase;
-  color:var(--text); flex-shrink:0;
+  font-family:'Libre Baskerville', serif;
+  font-size:1.08rem; font-weight:700;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:#fff; flex-shrink:0;
 }
-
-.hdr-badge {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.48rem; font-weight:300;
-  letter-spacing:.14em; text-transform:uppercase;
-  color:var(--dim); flex-shrink:0;
-  border:1px solid var(--border); padding:3px 9px;
-}
-
 .hdr-right {
   margin-left:auto; text-align:right; flex-shrink:0;
-  font-family:'IBM Plex Mono',monospace;
+  font-family:'JetBrains Mono', monospace;
   font-size:.52rem; font-weight:300;
   letter-spacing:.1em; text-transform:uppercase;
-  color:var(--dim); line-height:1.85;
+  color:rgba(255,255,255,.42); line-height:1.9;
 }
-
 .hdr-clock {
   font-size:.88rem; font-weight:400;
-  color:var(--glow);
-  text-shadow:0 0 16px rgba(0,191,160,.6);
+  color:rgba(255,255,255,.82);
+  letter-spacing:.06em;
 }
 
-/* ══ GRID ════════════════════════════════════════════ */
-.grid {
+/* ══ CONTENT ═════════════════════════════════════════ */
+.content {
   height:calc(600px - var(--hdr));
-  display:grid;
-  grid-template-columns:186px 1fr 212px;
-  gap:7px; padding:7px;
-  position:relative; z-index:2;
+  display:flex; flex-direction:column;
+  gap:8px; padding:9px;
 }
 
-/* ══ CARD ════════════════════════════════════════════ */
-.card {
-  background:var(--card);
+/* ══ GAUGE ROW ═══════════════════════════════════════ */
+.gauges {
+  display:flex; gap:6px; flex-shrink:0;
+}
+.g-wrap {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; gap:3px;
+}
+.g-label {
+  font-family:'JetBrains Mono', monospace;
+  font-size:.43rem; font-weight:400;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:var(--dim); text-align:center;
+}
+
+/* ══ CHART CARD ══════════════════════════════════════ */
+.chart-card {
+  flex:1;
+  background:var(--white);
   border:1px solid var(--border);
-  border-top:1px solid rgba(0,191,160,.22);
+  border-top:2px solid var(--teal);
+  padding:9px 14px 6px;
+  display:flex; flex-direction:column;
   position:relative; overflow:hidden;
 }
-
-/* Top-left corner bracket */
-.card::before {
+.chart-card::before {
   content:'';
-  position:absolute; top:0; left:0;
-  width:12px; height:12px;
-  border-top:1px solid var(--glow);
-  border-left:1px solid var(--glow);
-  opacity:.55;
+  position:absolute; top:6px; right:8px;
+  width:7px; height:7px;
+  border-top:1px solid var(--lteal);
+  border-right:1px solid var(--lteal);
+  opacity:.6;
+}
+.chart-title {
+  font-family:'JetBrains Mono', monospace;
+  font-size:.46rem; font-weight:400;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:7px; flex-shrink:0;
+}
+.chart-el {
+  flex:1; position:relative; min-height:0;
 }
 
-/* Bottom-right corner bracket */
-.card::after {
-  content:'';
-  position:absolute; bottom:0; right:0;
-  width:9px; height:9px;
-  border-bottom:1px solid var(--amber);
-  border-right:1px solid var(--amber);
-  opacity:.32;
-}
-
-/* Staggered entrance */
+/* ══ ANIMATIONS ══════════════════════════════════════ */
 @keyframes rise {
-  from { opacity:0; transform:translateY(7px); }
+  from { opacity:0; transform:translateY(8px); }
   to   { opacity:1; transform:translateY(0); }
 }
-
-.card-left   { animation:rise .55s .04s ease both; }
-.card-center { animation:rise .55s .13s ease both; display:flex; flex-direction:column; }
-.right       { animation:rise .55s .22s ease both; display:flex; flex-direction:column; gap:7px; }
-
-.ci { padding:13px 14px; height:100%; display:flex; flex-direction:column; }
-
-.lbl {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.46rem; font-weight:400;
-  letter-spacing:.24em; text-transform:uppercase;
-  color:var(--dim); margin-bottom:9px; flex-shrink:0;
-}
-
-/* ══ LEFT: TIDE ══════════════════════════════════════ */
-.tide-n {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:3.5rem; font-weight:300;
-  color:var(--text); line-height:1;
-  letter-spacing:-.025em; flex-shrink:0;
-  text-shadow:0 0 30px rgba(74,150,200,.2);
-}
-.tide-u {
-  font-size:.88rem; color:var(--dim);
-  margin-left:3px; vertical-align:.46em;
-}
-
-.tide-d {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.62rem; font-weight:300;
-  letter-spacing:.03em; margin-top:6px; flex-shrink:0;
-}
-.pos { color:var(--glow); text-shadow:0 0 10px rgba(0,191,160,.4); }
-.neg { color:var(--lo); }
-
-/* Tide bar */
-.bar-wrap { margin:10px 0 4px; flex-shrink:0; }
-.bar-track {
-  height:5px;
-  background:rgba(0,0,0,.5);
-  border:1px solid var(--border);
-  position:relative; overflow:hidden;
-}
-.bar-fill {
-  position:absolute; left:0; top:0; bottom:0;
-  background:linear-gradient(90deg, rgba(74,120,152,.65) 0%, rgba(0,191,160,.8) 100%);
-  transition:width 1.2s ease;
-}
-.bar-mid {
-  position:absolute; left:50%; top:-3px; bottom:-3px;
-  width:1px; background:var(--dim); opacity:.6;
-}
-.bar-labs {
-  display:flex; justify-content:space-between; margin-top:5px;
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.45rem; font-weight:300;
-  color:var(--dim); flex-shrink:0;
-}
-
-.sep { height:1px; background:var(--border); margin:10px 0 9px; flex-shrink:0; }
-
-.next-sub {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.46rem; font-weight:400;
-  letter-spacing:.24em; text-transform:uppercase;
-  color:var(--dim); margin-bottom:8px; flex-shrink:0;
-}
-.next-grid {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:4px 8px; flex-shrink:0;
-}
-.ng-l {
-  font-family:'Raleway',sans-serif;
-  font-size:.46rem; font-weight:300;
-  letter-spacing:.14em; text-transform:uppercase;
-  color:var(--dim); margin-bottom:2px;
-}
-.ng-v {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.88rem; font-weight:400; color:var(--text);
-}
-.ng-full { grid-column:1/-1; margin-top:4px; }
-.ng-full .ng-v { font-size:.76rem; font-weight:300; color:var(--blue); }
-
-.stamp {
-  margin-top:auto; padding-top:7px;
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.47rem; font-weight:300;
-  color:var(--dim); letter-spacing:.06em;
-}
-
-/* ══ CENTER: CHART ═══════════════════════════════════ */
-.chart-wrap { padding:10px 13px 7px; flex:1; display:flex; flex-direction:column; }
-.chart-el { flex:1; position:relative; min-height:0; }
-
-/* ══ RIGHT: CONDITIONS + MOON ════════════════════════ */
-.card-conds { flex:1; }
-
-.temp-big {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:2.4rem; font-weight:300;
-  color:var(--text); line-height:1;
-  letter-spacing:-.02em; margin-bottom:9px; flex-shrink:0;
-}
-.temp-u { font-size:.9rem; color:var(--dim); vertical-align:.28em; margin-left:2px; }
-
-.cond-rows { display:flex; flex-direction:column; flex:1; }
-.cr {
-  display:flex; align-items:baseline;
-  justify-content:space-between;
-  padding:6px 0; border-top:1px solid var(--border); flex:1;
-}
-.ck {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.46rem; font-weight:400;
-  letter-spacing:.18em; text-transform:uppercase; color:var(--dim);
-}
-.cv {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.85rem; font-weight:400; color:var(--text); text-align:right;
-}
-
-/* Moon card */
-.card-moon {
-  flex-shrink:0;
-  border-top-color:rgba(196,144,48,.32) !important;
-}
-.moon-inner { display:flex; align-items:center; gap:13px; padding:12px 14px; }
-.moon-em { font-size:2.1rem; line-height:1; flex-shrink:0; }
-.moon-name {
-  font-family:'Cinzel',serif;
-  font-size:.84rem; font-weight:400;
-  color:var(--amber); letter-spacing:.07em; line-height:1.3;
-  text-shadow:0 0 14px rgba(196,144,48,.35);
-}
-.moon-sub {
-  font-family:'IBM Plex Mono',monospace;
-  font-size:.46rem; font-weight:300;
-  color:var(--dim); letter-spacing:.16em;
-  text-transform:uppercase; margin-top:4px;
-}
+.g-wrap { animation:rise .5s ease both; }
+.g-wrap:nth-child(1) { animation-delay:.04s; }
+.g-wrap:nth-child(2) { animation-delay:.09s; }
+.g-wrap:nth-child(3) { animation-delay:.14s; }
+.g-wrap:nth-child(4) { animation-delay:.19s; }
+.g-wrap:nth-child(5) { animation-delay:.24s; }
+.g-wrap:nth-child(6) { animation-delay:.29s; }
+.chart-card { animation:rise .5s .34s ease both; }
 </style>
 </head>
 <body>
 
 <header class="hdr">
-
-  <!-- Compass rose -->
-  <svg width="34" height="34" viewBox="0 0 34 34" fill="none" style="flex-shrink:0;opacity:.92">
-    <circle cx="17" cy="17" r="15.5" stroke="#3A5468" stroke-width=".75"/>
-    <!-- N point (bright teal) -->
-    <path d="M17 2 L19.2 12 L17 13.8 L14.8 12Z" fill="#00BFA0" opacity=".9"/>
-    <!-- S point -->
-    <path d="M17 32 L14.8 22 L17 20.2 L19.2 22Z" fill="#4A96C8" opacity=".48"/>
-    <!-- E point -->
-    <path d="M32 17 L22 19.2 L20.2 17 L22 14.8Z" fill="#4A96C8" opacity=".48"/>
-    <!-- W point -->
-    <path d="M2 17 L12 14.8 L13.8 17 L12 19.2Z" fill="#4A96C8" opacity=".48"/>
-    <!-- Intercardinal ticks -->
-    <line x1="28.7" y1="5.3" x2="26.9" y2="7.1" stroke="#2A3E50" stroke-width=".8"/>
-    <line x1="5.3"  y1="5.3" x2="7.1"  y2="7.1" stroke="#2A3E50" stroke-width=".8"/>
-    <line x1="28.7" y1="28.7" x2="26.9" y2="26.9" stroke="#2A3E50" stroke-width=".8"/>
-    <line x1="5.3"  y1="28.7" x2="7.1"  y2="26.9" stroke="#2A3E50" stroke-width=".8"/>
-    <!-- Centre hub -->
-    <circle cx="17" cy="17" r="3.2" fill="#0A1826"/>
-    <circle cx="17" cy="17" r="2"   stroke="#3A5468" stroke-width=".7" fill="none"/>
-    <circle cx="17" cy="17" r="1.1" fill="#00BFA0" opacity=".85"/>
-  </svg>
-
-  <div class="hdr-pipe"></div>
+  <img class="hdr-logo" src="data:image/png;base64,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" alt="Spyglass Beach House">
+  <div class="hdr-sep"></div>
   <div class="hdr-name">Spyglass Beach House</div>
-  <div class="hdr-badge">Tide Station</div>
   <div class="hdr-right">
-    Port Townsend, WA &nbsp;&bull;&nbsp; NOAA 9444900<br>
+    Bush Point, WA &nbsp;&bull;&nbsp; NOAA Station 9444900<br>
     <span class="hdr-clock" id="clock">--:--</span>
   </div>
 </header>
 
-<div class="grid">
+<div class="content">
 
-  <!-- ── LEFT: tide ── -->
-  <div class="card card-left">
-    <div class="ci">
-      <div class="lbl">Water Level · MLLW</div>
+  <!-- ── GAUGE ROW ── -->
+  <div class="gauges">
 
-      <div class="tide-n">8.42<span class="tide-u">ft</span></div>
-      <div class="tide-d pos">+0.07 ft above MSL</div>
+    <!-- TIDE LEVEL -->
+    <div class="g-wrap">
+      <svg viewBox="0 0 148 152" style="width:100%;max-width:162px;display:block">
+        <!-- bg glow -->
+        <circle cx="74" cy="80" r="57" fill="rgba(40,140,160,.04)"/>
+        <!-- track arc 270° -->
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#D0E4E8" stroke-width="7"
+          stroke-dasharray="268.6 89.5"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- fill arc: tide f=0.504, filled=135.5 -->
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#288CA0" stroke-width="7"
+          stroke-dasharray="135.5 222.7"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- needle dot at f=0.504 → (75.2, 23.0) -->
+        <circle cx="75.2" cy="23.0" r="4.5" fill="#288CA0" stroke="#fff" stroke-width="2"/>
+        <!-- range labels -->
+        <text x="14" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">−8</text>
+        <text x="134" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">+8</text>
+        <!-- big value -->
+        <text x="74" y="74" text-anchor="middle" font-size="26" font-weight="300" fill="#002838" font-family="JetBrains Mono,monospace">8.42</text>
+        <text x="74" y="88" text-anchor="middle" font-size="10.5" fill="#6A8C98" font-family="JetBrains Mono,monospace">ft above MLLW</text>
+        <text x="74" y="104" text-anchor="middle" font-size="10" fill="#288CA0" font-family="JetBrains Mono,monospace">+0.07 ft MSL</text>
+      </svg>
+      <div class="g-label">Water Level</div>
+    </div>
 
-      <div class="bar-wrap">
-        <div class="bar-track">
-          <div class="bar-fill" style="width:51%"></div>
-          <div class="bar-mid"></div>
-        </div>
-        <div class="bar-labs">
-          <span>&minus;8 ft</span><span>MSL</span><span>+8 ft</span>
-        </div>
-      </div>
+    <!-- NEXT EVENT -->
+    <div class="g-wrap">
+      <svg viewBox="0 0 148 152" style="width:100%;max-width:162px;display:block">
+        <circle cx="74" cy="80" r="57" fill="rgba(26,122,94,.04)"/>
+        <!-- full ring decorative -->
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#D0E4E8" stroke-width="7"
+          stroke-dasharray="268.6 89.5"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#1A7A5E" stroke-width="7"
+          stroke-dasharray="201.4 156.7"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <circle cx="110.9" cy="42.5" r="4.5" fill="#1A7A5E" stroke="#fff" stroke-width="2"/>
+        <text x="14" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">now</text>
+        <text x="134" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">+6h</text>
+        <!-- label HIGH -->
+        <text x="74" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#1A7A5E" font-family="Libre Baskerville,serif" letter-spacing="2">HIGH</text>
+        <text x="74" y="81" text-anchor="middle" font-size="22" font-weight="300" fill="#002838" font-family="JetBrains Mono,monospace">9.12</text>
+        <text x="74" y="95" text-anchor="middle" font-size="10" fill="#6A8C98" font-family="JetBrains Mono,monospace">ft</text>
+        <text x="74" y="110" text-anchor="middle" font-size="11" fill="#1A7A5E" font-family="JetBrains Mono,monospace">14:24 UTC</text>
+      </svg>
+      <div class="g-label">Next Event</div>
+    </div>
 
-      <div class="sep"></div>
+    <!-- TEMPERATURE -->
+    <div class="g-wrap">
+      <svg viewBox="0 0 148 152" style="width:100%;max-width:162px;display:block">
+        <circle cx="74" cy="80" r="57" fill="rgba(184,120,32,.04)"/>
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#D0E4E8" stroke-width="7"
+          stroke-dasharray="268.6 89.5"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- fill: temp f=0.298, filled=80.0 -->
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#B87820" stroke-width="7"
+          stroke-dasharray="80.0 278.1"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- needle dot at (27.6, 47.0) -->
+        <circle cx="27.6" cy="47.0" r="4.5" fill="#B87820" stroke="#fff" stroke-width="2"/>
+        <text x="14" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">32°</text>
+        <text x="134" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">80°</text>
+        <text x="74" y="78" text-anchor="middle" font-size="30" font-weight="300" fill="#002838" font-family="JetBrains Mono,monospace">46</text>
+        <text x="74" y="93" text-anchor="middle" font-size="11" fill="#6A8C98" font-family="JetBrains Mono,monospace">.3 °F</text>
+      </svg>
+      <div class="g-label">Temperature</div>
+    </div>
 
-      <div class="next-sub">Next Event</div>
-      <div class="next-grid">
-        <div>
-          <div class="ng-l">Type</div>
-          <div class="ng-v">High</div>
-        </div>
-        <div>
-          <div class="ng-l">Height</div>
-          <div class="ng-v">9.12 ft</div>
-        </div>
-        <div class="ng-full">
-          <div class="ng-l">At</div>
-          <div class="ng-v">14:24 UTC</div>
-        </div>
-      </div>
+    <!-- WIND -->
+    <div class="g-wrap">
+      <svg viewBox="0 0 148 152" style="width:100%;max-width:162px;display:block">
+        <circle cx="74" cy="80" r="57" fill="rgba(40,140,160,.04)"/>
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#D0E4E8" stroke-width="7"
+          stroke-dasharray="268.6 89.5"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- fill: wind f=0.234, filled=62.9 -->
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#4A96C8" stroke-width="7"
+          stroke-dasharray="62.9 295.2"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- needle dot at (19.9, 62.1) -->
+        <circle cx="19.9" cy="62.1" r="4.5" fill="#4A96C8" stroke="#fff" stroke-width="2"/>
+        <text x="14" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">0</text>
+        <text x="134" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">35kt</text>
+        <text x="74" y="68" text-anchor="middle" font-size="11" font-weight="500" fill="#4A96C8" font-family="Libre Baskerville,serif" letter-spacing="2">NW</text>
+        <text x="74" y="85" text-anchor="middle" font-size="26" font-weight="300" fill="#002838" font-family="JetBrains Mono,monospace">8.2</text>
+        <text x="74" y="99" text-anchor="middle" font-size="10.5" fill="#6A8C98" font-family="JetBrains Mono,monospace">kt  ·  gust 12.0</text>
+      </svg>
+      <div class="g-label">Wind</div>
+    </div>
 
-      <div class="stamp">Updated --:--</div>
+    <!-- PRESSURE -->
+    <div class="g-wrap">
+      <svg viewBox="0 0 148 152" style="width:100%;max-width:162px;display:block">
+        <circle cx="74" cy="80" r="57" fill="rgba(0,60,80,.03)"/>
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#D0E4E8" stroke-width="7"
+          stroke-dasharray="268.6 89.5"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- fill: pressure f=0.640, filled=171.9 -->
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#003C50" stroke-width="7"
+          stroke-dasharray="171.9 186.2"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- needle dot at (108.9, 35.0) -->
+        <circle cx="108.9" cy="35.0" r="4.5" fill="#003C50" stroke="#fff" stroke-width="2"/>
+        <text x="14" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">980</text>
+        <text x="134" y="137" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">1040</text>
+        <text x="74" y="76" text-anchor="middle" font-size="24" font-weight="300" fill="#002838" font-family="JetBrains Mono,monospace">1018</text>
+        <text x="74" y="91" text-anchor="middle" font-size="11" fill="#6A8C98" font-family="JetBrains Mono,monospace">.4 mb</text>
+        <text x="74" y="110" text-anchor="middle" font-size="9" fill="#A0B8C0" font-family="JetBrains Mono,monospace">rising</text>
+      </svg>
+      <div class="g-label">Pressure</div>
+    </div>
+
+    <!-- MOON PHASE -->
+    <div class="g-wrap">
+      <svg viewBox="0 0 148 152" style="width:100%;max-width:162px;display:block" id="moon-svg">
+        <circle cx="74" cy="80" r="57" fill="rgba(184,120,32,.04)"/>
+        <circle cx="74" cy="80" r="57" fill="none"
+          stroke="#D0E4E8" stroke-width="7"
+          stroke-dasharray="268.6 89.5"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <!-- fill: full moon f=1.0, filled=268.6 -->
+        <circle id="moon-arc" cx="74" cy="80" r="57" fill="none"
+          stroke="#B87820" stroke-width="7"
+          stroke-dasharray="268.6 89.5"
+          stroke-linecap="round"
+          transform="rotate(135, 74, 80)"/>
+        <circle id="moon-dot" cx="114.3" cy="120.3" r="4.5" fill="#B87820" stroke="#fff" stroke-width="2"/>
+        <text id="moon-em" x="74" y="85" text-anchor="middle" font-size="34">🌕</text>
+        <text id="moon-name" x="74" y="105" text-anchor="middle" font-size="9.5" fill="#B87820" font-family="Libre Baskerville,serif" font-style="italic">Full Moon</text>
+      </svg>
+      <div class="g-label">Lunar Phase</div>
+    </div>
+
+  </div><!-- /gauges -->
+
+  <!-- ── FULL-WIDTH CHART ── -->
+  <div class="chart-card">
+    <div class="chart-title">48-Hour Tide Prediction &nbsp;·&nbsp; Bush Point, WA &nbsp;·&nbsp; NOAA Station 9444900</div>
+    <div class="chart-el" id="tc">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--dim)">Loading chart&hellip;</span>
     </div>
   </div>
 
-  <!-- ── CENTER: chart ── -->
-  <div class="card card-center">
-    <div class="chart-wrap">
-      <div class="lbl">48-Hour Tide Prediction &nbsp;·&nbsp; Port Townsend, WA</div>
-      <div class="chart-el" id="tc">
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--dim)">Loading chart&hellip;</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── RIGHT: conditions + moon ── -->
-  <div class="right">
-
-    <div class="card card-conds">
-      <div class="ci">
-        <div class="lbl">Conditions · Stn 9444900</div>
-        <div class="temp-big">46.3<span class="temp-u">&deg;F</span></div>
-        <div class="cond-rows">
-          <div class="cr">
-            <span class="ck">Wind</span>
-            <span class="cv">8.2 kt NW</span>
-          </div>
-          <div class="cr">
-            <span class="ck">Gust</span>
-            <span class="cv">12.0 kt</span>
-          </div>
-          <div class="cr">
-            <span class="ck">Pressure</span>
-            <span class="cv">1018.4 mb</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card card-moon">
-      <div class="moon-inner">
-        <span class="moon-em" id="moon-em">🌕</span>
-        <div>
-          <div class="moon-name" id="moon-name">Full Moon</div>
-          <div class="moon-sub">Lunar Phase</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-</div><!-- /grid -->
+</div><!-- /content -->
 
 <script>
 const MF = 8.35, CF = 8.42;
@@ -437,23 +353,40 @@ const MF = 8.35, CF = 8.42;
   setTimeout(tick, 15000);
 })();
 
-// Moon phase
+// Moon phase — updates arc fill and emoji
 (function() {
   const syn = 29.53059 * 86400000;
   const pct = ((Date.now() - new Date('2000-01-06T18:14:00Z')) % syn + syn) % syn / syn;
   const P = [
-    [.03,'🌑','New Moon'],      [.25,'🌒','Waxing Crescent'],
-    [.27,'🌓','First Quarter'], [.49,'🌔','Waxing Gibbous'],
-    [.51,'🌕','Full Moon'],     [.73,'🌖','Waning Gibbous'],
-    [.77,'🌗','Last Quarter'],  [.97,'🌘','Waning Crescent'],
-    [1., '🌑','New Moon']
+    [.03,'🌑','New Moon',     0   ],
+    [.25,'🌒','Waxing Crescent',.25],
+    [.27,'🌓','First Quarter',.5  ],
+    [.49,'🌔','Waxing Gibbous',.75],
+    [.51,'🌕','Full Moon',    1.0 ],
+    [.73,'🌖','Waning Gibbous',.75],
+    [.77,'🌗','Last Quarter', .5  ],
+    [.97,'🌘','Waning Crescent',.25],
+    [1., '🌑','New Moon',     0   ]
   ];
   const p = P.find(x => pct <= x[0]);
   document.getElementById('moon-em').textContent   = p[1];
   document.getElementById('moon-name').textContent = p[2];
+  // Update arc fill
+  const circ = 358.1, arc270 = 268.6;
+  const f = p[3];
+  const filled = f * arc270;
+  document.getElementById('moon-arc').setAttribute('stroke-dasharray', filled + ' ' + (circ - filled));
+  // Update needle dot position
+  const angle = (135 + f * 270) * Math.PI / 180;
+  const cx = 74 + 57 * Math.cos(angle);
+  const cy = 80 + 57 * Math.sin(angle);
+  const dot = document.getElementById('moon-dot');
+  dot.setAttribute('cx', cx.toFixed(1));
+  dot.setAttribute('cy', cy.toFixed(1));
+  if (f === 0) dot.style.display = 'none';
 })();
 
-// Tide chart
+// Tide chart — full width
 (async () => {
   const el = document.getElementById('tc');
   try {
@@ -465,10 +398,10 @@ const MF = 8.35, CF = 8.42;
     if (!r.ok) throw 0;
     const { predictions: P } = await r.json();
     const vs = P.map(p => +p.v);
-    const lo = Math.min(...vs) - .4, hi = Math.max(...vs) + .4;
-    const W  = el.offsetWidth  || 500;
-    const H  = el.offsetHeight || 430;
-    const PL=36, PB=28, PT=10, PR=10;
+    const lo = Math.min(...vs) - .35, hi = Math.max(...vs) + .35;
+    const W  = el.offsetWidth  || 980;
+    const H  = el.offsetHeight || 310;
+    const PL=38, PB=26, PT=10, PR=12;
     const cw=W-PL-PR, ch=H-PT-PB;
     const ts = P.map(p => new Date(p.t.replace(' ','T')+'Z').getTime());
     const t0=ts[0], t1=ts[ts.length-1];
@@ -479,14 +412,10 @@ const MF = 8.35, CF = 8.42;
     let s = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;display:block">
 <defs>
   <linearGradient id="wg" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%"   stop-color="#00BFA0" stop-opacity=".2"/>
-    <stop offset="55%"  stop-color="#4A96C8" stop-opacity=".07"/>
-    <stop offset="100%" stop-color="#4A96C8" stop-opacity=".01"/>
+    <stop offset="0%"   stop-color="#288CA0" stop-opacity=".18"/>
+    <stop offset="60%"  stop-color="#288CA0" stop-opacity=".06"/>
+    <stop offset="100%" stop-color="#288CA0" stop-opacity=".01"/>
   </linearGradient>
-  <filter id="gl" x="-10%" y="-20%" width="120%" height="140%">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b"/>
-    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-  </filter>
   <clipPath id="cc"><rect x="${PL}" y="${PT}" width="${cw}" height="${ch}"/></clipPath>
 </defs>`;
 
@@ -494,25 +423,25 @@ const MF = 8.35, CF = 8.42;
     for (let v = Math.ceil(lo); v <= hi; v++) {
       const y = +ty(v), maj = v % 2 === 0;
       s += `<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}"
-stroke="${maj ? '#132030' : '#0D1828'}" stroke-width="${maj ? .85 : .4}" clip-path="url(#cc)"/>`;
+stroke="${maj ? '#D8ECF0' : '#EBF4F6'}" stroke-width="${maj ? 1 : .5}" clip-path="url(#cc)"/>`;
       if (maj) s += `<text x="${PL-5}" y="${y+3.5}" text-anchor="end"
-font-size="9" font-family="IBM Plex Mono,monospace" font-weight="300" fill="#3A5468">${v}</text>`;
+font-size="9.5" font-family="JetBrains Mono,monospace" font-weight="300" fill="#9ABAC4">${v}</text>`;
     }
 
     // MSL dashed line
     const mY = +ty(MF);
     s += `<line x1="${PL}" y1="${mY}" x2="${W-PR}" y2="${mY}"
-stroke="#00BFA0" stroke-width="1" stroke-dasharray="5,4" opacity=".28" clip-path="url(#cc)"/>`;
-    s += `<text x="${PL+7}" y="${mY-5}" font-size="8"
-font-family="IBM Plex Mono,monospace" font-weight="300" fill="#00BFA0" opacity=".45">MSL</text>`;
+stroke="#288CA0" stroke-width="1.2" stroke-dasharray="6,4" opacity=".35" clip-path="url(#cc)"/>`;
+    s += `<text x="${PL+8}" y="${mY-5}" font-size="8.5"
+font-family="JetBrains Mono,monospace" fill="#288CA0" opacity=".6">MSL</text>`;
 
-    // Area fill + curve
+    // Area fill
     const path = P.map((p,i) => (i?'L':'M') + tx(ts[i]) + ',' + ty(vs[i])).join('');
     s += `<path d="${path} L${tx(t1)},${H-PB} L${PL},${H-PB}Z"
 fill="url(#wg)" clip-path="url(#cc)"/>`;
-    s += `<path d="${path}" fill="none" stroke="#00BFA0" stroke-width="2"
-stroke-linejoin="round" stroke-linecap="round"
-opacity=".82" clip-path="url(#cc)" filter="url(#gl)"/>`;
+    // Curve
+    s += `<path d="${path}" fill="none" stroke="#288CA0" stroke-width="2.5"
+stroke-linejoin="round" stroke-linecap="round" clip-path="url(#cc)"/>`;
 
     // Hi/Lo diamond markers
     for (let i = 1; i < P.length - 1; i++) {
@@ -520,48 +449,47 @@ opacity=".82" clip-path="url(#cc)" filter="url(#gl)"/>`;
       const isL = vs[i] < vs[i-1] && vs[i] < vs[i+1];
       if (!isH && !isL) continue;
       const cx = +tx(ts[i]), cy = +ty(vs[i]);
-      const col = isH ? '#28B896' : '#4A7898';
+      const col = isH ? '#1A7A5E' : '#7A9AA8';
       const yo  = isH ? -9 : 13;
-      s += `<polygon points="${cx},${cy-4} ${cx+3.5},${cy} ${cx},${cy+4} ${cx-3.5},${cy}"
-fill="${col}" opacity=".8" clip-path="url(#cc)"/>`;
+      s += `<polygon points="${cx},${cy-5} ${cx+4},${cy} ${cx},${cy+5} ${cx-4},${cy}"
+fill="${col}" opacity=".82" clip-path="url(#cc)"/>`;
       s += `<text x="${cx}" y="${cy+yo}" text-anchor="middle"
-font-size="9" font-family="IBM Plex Mono,monospace" font-weight="400" fill="${col}">${vs[i].toFixed(1)}</text>`;
+font-size="9.5" font-family="JetBrains Mono,monospace" font-weight="400" fill="${col}">${vs[i].toFixed(1)}</text>`;
     }
 
-    // Current-time dashed line + amber dot
+    // Now line + current level dot
     const nx = +tx(now);
     if (nx > PL && nx < W-PR) {
       s += `<line x1="${nx}" y1="${PT}" x2="${nx}" y2="${H-PB}"
-stroke="#C49030" stroke-width="1.1" stroke-dasharray="3,3" opacity=".6" clip-path="url(#cc)"/>`;
+stroke="#B87820" stroke-width="1.2" stroke-dasharray="4,3" opacity=".65" clip-path="url(#cc)"/>`;
       if (CF > 0) {
         const cy = +ty(CF);
-        s += `<circle cx="${nx}" cy="${cy}" r="5"
-fill="#C49030" stroke="#06101C" stroke-width="1.5" opacity=".9"/>`;
+        s += `<circle cx="${nx}" cy="${cy}" r="5.5"
+fill="#B87820" stroke="#fff" stroke-width="2" opacity=".92"/>`;
       }
     }
 
-    // Time-axis labels
+    // Time axis
     for (let t = t0; t <= t1; t += 6*3600000) {
       const x = +tx(t);
-      if (x > PL+20 && x < W-PR-15) {
+      if (x > PL+20 && x < W-PR-20) {
         const d = new Date(t), h = d.getHours();
         const lbl = h===0
           ? `${d.getMonth()+1}/${d.getDate()}`
           : h.toString().padStart(2,'0')+':00';
-        s += `<text x="${x}" y="${H-8}" text-anchor="middle"
-font-size="8.5" font-family="IBM Plex Mono,monospace" font-weight="300" fill="#3A5468">${lbl}</text>`;
-        s += `<line x1="${x}" y1="${H-PB}" x2="${x}" y2="${H-PB+4}"
-stroke="#132030" stroke-width="1"/>`;
+        s += `<text x="${x}" y="${H-7}" text-anchor="middle"
+font-size="9" font-family="JetBrains Mono,monospace" font-weight="300" fill="#9ABAC4">${lbl}</text>`;
+        s += `<line x1="${x}" y1="${H-PB}" x2="${x}" y2="${H-PB+4}" stroke="#C8DDE2"/>`;
       }
     }
 
     // Axes
-    s += `<line x1="${PL}" y1="${PT}"   x2="${PL}"   y2="${H-PB}" stroke="#132030"/>`;
-    s += `<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#132030"/>`;
+    s += `<line x1="${PL}" y1="${PT}"   x2="${PL}"   y2="${H-PB}" stroke="#C8DDE2"/>`;
+    s += `<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#C8DDE2"/>`;
     s += '</svg>';
     el.innerHTML = s;
   } catch(e) {
-    el.innerHTML = '<span style="font-family:IBM Plex Mono,monospace;font-size:.72rem;color:#3A5468">Chart unavailable</span>';
+    el.innerHTML = '<span style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:#9ABAC4">Chart unavailable</span>';
   }
 })();
 </script>
