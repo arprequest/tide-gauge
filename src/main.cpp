@@ -66,6 +66,7 @@ struct MeteoState {
   float tempF          = 0.0f;
   float windKnots      = 0.0f;
   float windGustKnots  = 0.0f;
+  float pressureMb     = 0.0f;
   String windDirLabel  = "--";
   String fetchedAt     = "--";
   bool  valid = false;
@@ -297,11 +298,30 @@ void fetchMeteo() {
   }
   http.end();
 
+  // ── Air pressure ──────────────────────────────────────────────
+  String pUrl = String("https://") + NOAA_HOST +
+    "/api/prod/datagetter?station=" + NOAA_STATION +
+    "&product=air_pressure&time_zone=gmt&units=metric&format=json&range=1";
+  http.begin(client, pUrl);
+  if (http.GET() == 200) {
+    String body = http.getString();
+    JsonDocument doc;
+    if (!deserializeJson(doc, body)) {
+      JsonArray data = doc["data"].as<JsonArray>();
+      if (data.size() > 0) {
+        const char* v = data[data.size() - 1]["v"];
+        if (v && strcmp(v, "NaN") != 0)
+          meteoState.pressureMb = String(v).toFloat();
+      }
+    }
+  }
+  http.end();
+
   meteoState.valid     = true;
   meteoState.fetchedAt = nowString();
-  Serial.printf("[Meteo] %.1f°F  wind %s %.1f kt  gust %.1f kt\n",
+  Serial.printf("[Meteo] %.1f°F  wind %s %.1f kt  gust %.1f kt  %.1f mb\n",
     meteoState.tempF, meteoState.windDirLabel.c_str(),
-    meteoState.windKnots, meteoState.windGustKnots);
+    meteoState.windKnots, meteoState.windGustKnots, meteoState.pressureMb);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -432,6 +452,9 @@ void handleRoot() {
     html += "<div class=\"stat-value\">" + meteoState.windDirLabel + "</div></div>";
     html += "<div class=\"col\"><div class=\"stat-label\">Gust</div>";
     snprintf(buf, sizeof(buf), "%.1f kt", meteoState.windGustKnots);
+    html += "<div class=\"stat-value\">" + String(buf) + "</div></div>";
+    html += "<div class=\"col\"><div class=\"stat-label\">Pressure</div>";
+    snprintf(buf, sizeof(buf), "%.1f mb", meteoState.pressureMb);
     html += "<div class=\"stat-value\">" + String(buf) + "</div></div>";
     html += "</div>";
   } else {
